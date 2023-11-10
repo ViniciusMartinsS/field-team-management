@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"github.com/ViniciusMartinss/field-team-management/application/usecase"
+	"github.com/ViniciusMartinss/field-team-management/infrastructure/repository"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -15,7 +16,8 @@ func CreateTaskRoutes(r *gin.Engine) {
 
 func getTasks() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		taskUsecase, _ := usecase.NewTask(nil, nil)
+		taskRepository, _ := repository.NewTask(nil)
+		taskUsecase, _ := usecase.NewTask(taskRepository, taskRepository)
 		tasks, _ := taskUsecase.ListByUserID(context.Background(), 1)
 
 		c.JSON(http.StatusOK, tasks)
