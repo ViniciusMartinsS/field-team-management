@@ -13,10 +13,12 @@ func TestNewTask(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	creator := domain.NewMockTaskCreator(ctrl)
 	retriever := domain.NewMockTaskRetriever(ctrl)
+	userRetriever := domain.NewMockUserRetriever(ctrl)
 
 	type args struct {
-		creator   domain.TaskCreator
-		retriever domain.TaskRetriever
+		creator       domain.TaskCreator
+		retriever     domain.TaskRetriever
+		userRetriever domain.UserRetriever
 	}
 
 	tests := []struct {
@@ -28,8 +30,9 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil creator",
 			args: args{
-				creator:   nil,
-				retriever: retriever,
+				creator:       nil,
+				retriever:     retriever,
+				userRetriever: userRetriever,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -37,8 +40,19 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil retriever",
 			args: args{
-				creator:   creator,
-				retriever: nil,
+				creator:       creator,
+				retriever:     nil,
+				userRetriever: userRetriever,
+			},
+			want:    &taskUseCase{},
+			wantErr: true,
+		},
+		{
+			name: "error - nil user retriever",
+			args: args{
+				creator:       creator,
+				retriever:     retriever,
+				userRetriever: nil,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -46,16 +60,17 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "happy",
 			args: args{
-				creator:   creator,
-				retriever: retriever,
+				creator:       creator,
+				retriever:     retriever,
+				userRetriever: userRetriever,
 			},
-			want:    &taskUseCase{creator: creator, retriever: retriever},
+			want:    &taskUseCase{creator: creator, retriever: retriever, userRetriever: userRetriever},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTask(tt.args.creator, tt.args.retriever)
+			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.userRetriever)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewTask() error = %v, wantErr %v", err, tt.wantErr)
 				return
