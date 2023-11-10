@@ -27,8 +27,7 @@ func NewTask(creator domain.TaskCreator, retriever domain.TaskRetriever) (domain
 	}, nil
 }
 
-func (*taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
-	// Check USER ID, if manager, list it all, otherwise by user only
+func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
 	currentTime := time.Now()
 	return []domain.Task{
 		{
@@ -40,7 +39,7 @@ func (*taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task
 	}, nil
 }
 
-func (*taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, error) {
+func (u *taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, error) {
 	// I'll add logic to create the customer
 	return task, nil
 }
