@@ -1,3 +1,5 @@
+//go:generate mockgen -source=task.go -destination=task_mock.go -package=domain
+
 package domain
 
 import (
@@ -10,8 +12,18 @@ import (
 
 var ErrInvalidTask = errors.New("task fields are invalid")
 
+type TaskUsecase interface {
+	Add(ctx context.Context, task Task) (Task, error)
+	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+}
+
 type TaskCreator interface {
 	Add(ctx context.Context, task Task) (Task, error)
+}
+
+type TaskRetriever interface {
+	List(ctx context.Context) ([]Task, error)
+	ListByUserID(ctx context.Context, userID int) ([]Task, error)
 }
 
 type Task struct {
