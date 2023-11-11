@@ -259,10 +259,9 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 }
 
 func Test_taskUseCase_Add(t *testing.T) {
-	encryptor, _ := encryption.New("123456789123456789123456")
-
 	type dependencies struct {
-		creator *domain.MockTaskCreator
+		creator   *domain.MockTaskCreator
+		encryptor *domain.MockSummaryEncryptor
 	}
 
 	type args struct {
@@ -284,13 +283,26 @@ func Test_taskUseCase_Add(t *testing.T) {
 		wantErr         bool
 	}{
 		{
+			name: "error on Encrypt",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+			},
+			setDependencies: func(d *dependencies) {
+				d.encryptor.EXPECT().Encrypt(task.Summary).Return("", errors.New("err"))
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
 			name: "error on Add",
 			args: args{
 				ctx:  context.Background(),
-				task: domain.Task{},
+				task: task,
 			},
 			setDependencies: func(d *dependencies) {
-				d.creator.EXPECT().Add(context.Background(), gomock.Any()).Return(domain.Task{}, errors.New("err"))
+				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+				d.creator.EXPECT().Add(context.Background(), task).Return(domain.Task{}, errors.New("err"))
 			},
 			want:    domain.Task{},
 			wantErr: true,
@@ -299,10 +311,11 @@ func Test_taskUseCase_Add(t *testing.T) {
 			name: "happy",
 			args: args{
 				ctx:  context.Background(),
-				task: domain.Task{},
+				task: task,
 			},
 			setDependencies: func(d *dependencies) {
-				d.creator.EXPECT().Add(context.Background(), gomock.Any()).Return(task, nil)
+				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+				d.creator.EXPECT().Add(context.Background(), task).Return(task, nil)
 			},
 			want:    task,
 			wantErr: false,
@@ -314,7 +327,8 @@ func Test_taskUseCase_Add(t *testing.T) {
 			defer ctrl.Finish()
 
 			d := dependencies{
-				creator: domain.NewMockTaskCreator(ctrl),
+				encryptor: domain.NewMockSummaryEncryptor(ctrl),
+				creator:   domain.NewMockTaskCreator(ctrl),
 			}
 
 			if tt.setDependencies != nil {
@@ -323,7 +337,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 
 			u := &taskUseCase{
 				creator:   d.creator,
-				encryptor: encryptor,
+				encryptor: d.encryptor,
 			}
 
 			got, err := u.Add(tt.args.ctx, tt.args.task)
