@@ -10,7 +10,10 @@ import (
 	"time"
 )
 
-var ErrInvalidTask = errors.New("task fields are invalid")
+var (
+	ErrInvalidTask   = errors.New("task fields are invalid")
+	ErrTasksNotFound = errors.New("tasks not found")
+)
 
 type TaskUsecase interface {
 	Add(ctx context.Context, task Task) (Task, error)

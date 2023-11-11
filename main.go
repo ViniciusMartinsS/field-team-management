@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/field?multiStatements=true")
+	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/field?multiStatements=true&parseTime=true")
 	if err != nil {
 		panic(err)
 	}
