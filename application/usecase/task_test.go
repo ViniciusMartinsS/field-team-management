@@ -17,6 +17,7 @@ func TestNewTask(t *testing.T) {
 	creator := domain.NewMockTaskCreator(ctrl)
 	retriever := domain.NewMockTaskRetriever(ctrl)
 	updater := domain.NewMockTaskUpdater(ctrl)
+	remover := domain.NewMockTaskRemover(ctrl)
 	userRetriever := domain.NewMockUserRetriever(ctrl)
 	encryptor, _ := encryption.New("12345678912345678912345") // Change to mock
 
@@ -24,6 +25,7 @@ func TestNewTask(t *testing.T) {
 		creator       domain.TaskCreator
 		retriever     domain.TaskRetriever
 		updater       domain.TaskUpdater
+		remover       domain.TaskRemover
 		userRetriever domain.UserRetriever
 		encryptor     domain.SummaryEncryptor
 	}
@@ -40,6 +42,7 @@ func TestNewTask(t *testing.T) {
 				creator:       nil,
 				retriever:     retriever,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: userRetriever,
 				encryptor:     encryptor,
 			},
@@ -52,6 +55,7 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     nil,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: userRetriever,
 				encryptor:     encryptor,
 			},
@@ -64,6 +68,7 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     retriever,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: nil,
 				encryptor:     encryptor,
 			},
@@ -76,6 +81,20 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     retriever,
 				updater:       nil,
+				remover:       remover,
+				userRetriever: userRetriever,
+				encryptor:     encryptor,
+			},
+			want:    &taskUseCase{},
+			wantErr: true,
+		},
+		{
+			name: "error - nil user remover",
+			args: args{
+				creator:       creator,
+				retriever:     retriever,
+				updater:       updater,
+				remover:       nil,
 				userRetriever: userRetriever,
 				encryptor:     encryptor,
 			},
@@ -88,6 +107,7 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     retriever,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: userRetriever,
 				encryptor:     nil,
 			},
@@ -100,6 +120,7 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     retriever,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: userRetriever,
 				encryptor:     encryptor,
 			},
@@ -107,6 +128,7 @@ func TestNewTask(t *testing.T) {
 				creator:       creator,
 				retriever:     retriever,
 				updater:       updater,
+				remover:       remover,
 				userRetriever: userRetriever,
 				encryptor:     encryptor,
 			},
@@ -115,7 +137,7 @@ func TestNewTask(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.userRetriever, tt.args.encryptor)
+			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.remover, tt.args.userRetriever, tt.args.encryptor)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewTask() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -446,6 +468,108 @@ func Test_taskUseCase_Update(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_taskUseCase_Remove(t *testing.T) {
+	type dependencies struct {
+		userRetriever *domain.MockUserRetriever
+		remover       *domain.MockTaskRemover
+	}
+
+	type args struct {
+		ctx    context.Context
+		id     int
+		userID int
+	}
+
+	const id = 1
+
+	tests := []struct {
+		name            string
+		args            args
+		setDependencies func(d *dependencies)
+		wantErr         bool
+	}{
+		{
+			name: "error on Remove without ID",
+			args: args{
+				ctx:    context.Background(),
+				userID: 1,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error on Remove without UserID",
+			args: args{
+				ctx: context.Background(),
+				id:  id,
+			},
+			wantErr: true,
+		},
+		{
+			name: "error on ListByUserID",
+			args: args{
+				ctx:    context.Background(),
+				id:     id,
+				userID: id,
+			},
+			setDependencies: func(d *dependencies) {
+				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{}, errors.New("err"))
+			},
+			wantErr: true,
+		},
+		{
+			name: "error user forbidden",
+			args: args{
+				ctx:    context.Background(),
+				id:     id,
+				userID: id,
+			},
+			setDependencies: func(d *dependencies) {
+				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{id, 2}, nil)
+			},
+			wantErr: true,
+		},
+		{
+			name: "happy",
+			args: args{
+				ctx:    context.Background(),
+				id:     id,
+				userID: id,
+			},
+			setDependencies: func(d *dependencies) {
+				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{id, 1}, nil)
+				d.remover.EXPECT().Remove(context.Background(), id, id).Return(nil)
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			d := dependencies{
+				userRetriever: domain.NewMockUserRetriever(ctrl),
+				remover:       domain.NewMockTaskRemover(ctrl),
+			}
+
+			if tt.setDependencies != nil {
+				tt.setDependencies(&d)
+			}
+
+			u := &taskUseCase{
+				userRetriever: d.userRetriever,
+				remover:       d.remover,
+			}
+
+			err := u.Remove(tt.args.ctx, tt.args.id, tt.args.userID)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Remove() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
 		})
 	}
 }

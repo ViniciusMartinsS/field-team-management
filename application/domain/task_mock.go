@@ -208,6 +208,43 @@ func (mr *MockTaskUpdaterMockRecorder) Update(ctx, task interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskUpdater)(nil).Update), ctx, task)
 }
 
+// MockTaskRemover is a mock of TaskRemover interface.
+type MockTaskRemover struct {
+	ctrl     *gomock.Controller
+	recorder *MockTaskRemoverMockRecorder
+}
+
+// MockTaskRemoverMockRecorder is the mock recorder for MockTaskRemover.
+type MockTaskRemoverMockRecorder struct {
+	mock *MockTaskRemover
+}
+
+// NewMockTaskRemover creates a new mock instance.
+func NewMockTaskRemover(ctrl *gomock.Controller) *MockTaskRemover {
+	mock := &MockTaskRemover{ctrl: ctrl}
+	mock.recorder = &MockTaskRemoverMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTaskRemover) EXPECT() *MockTaskRemoverMockRecorder {
+	return m.recorder
+}
+
+// Remove mocks base method.
+func (m *MockTaskRemover) Remove(ctx context.Context, id, userID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Remove", ctx, id, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Remove indicates an expected call of Remove.
+func (mr *MockTaskRemoverMockRecorder) Remove(ctx, id, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskRemover)(nil).Remove), ctx, id, userID)
+}
+
 // MockSummaryEncryptor is a mock of SummaryEncryptor interface.
 type MockSummaryEncryptor struct {
 	ctrl     *gomock.Controller

@@ -11,6 +11,7 @@ type taskUseCase struct {
 	creator       domain.TaskCreator
 	retriever     domain.TaskRetriever
 	updater       domain.TaskUpdater
+	remover       domain.TaskRemover
 	userRetriever domain.UserRetriever
 	encryptor     domain.SummaryEncryptor
 }
@@ -19,6 +20,7 @@ func NewTask(
 	creator domain.TaskCreator,
 	retriever domain.TaskRetriever,
 	updater domain.TaskUpdater,
+	remover domain.TaskRemover,
 	userRetriever domain.UserRetriever,
 	encryptor domain.SummaryEncryptor,
 ) (domain.TaskUsecase, error) {
@@ -34,6 +36,10 @@ func NewTask(
 		return &taskUseCase{}, errors.New("task updater must not be nil")
 	}
 
+	if remover == nil {
+		return &taskUseCase{}, errors.New("task remover must not be nil")
+	}
+
 	if userRetriever == nil {
 		return &taskUseCase{}, errors.New("user retriever must not be nil")
 	}
@@ -46,6 +52,7 @@ func NewTask(
 		creator,
 		retriever,
 		updater,
+		remover,
 		userRetriever,
 		encryptor,
 	}, nil
@@ -124,4 +131,25 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task
 	}
 
 	return t, nil
+}
+
+func (u *taskUseCase) Remove(ctx context.Context, id, userID int) error {
+	if id == 0 {
+		return errors.New("ID must not be 0")
+	}
+
+	if userID == 0 {
+		return errors.New("UserID must not be 0")
+	}
+
+	user, err := u.userRetriever.ListByUserID(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	if user.GetRole() == domain.Technician {
+		return errors.New("forbidden")
+	}
+
+	return u.remover.Remove(ctx, id, userID)
 }

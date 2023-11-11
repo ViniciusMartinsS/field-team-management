@@ -31,6 +31,10 @@ type TaskUpdater interface {
 	Update(ctx context.Context, task Task) (Task, error)
 }
 
+type TaskRemover interface {
+	Remove(ctx context.Context, id, userID int) error
+}
+
 type SummaryEncryptor interface {
 	Encrypt(value string) (string, error)
 	Decrypt(value string) (string, error)
