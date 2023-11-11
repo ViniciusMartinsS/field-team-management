@@ -23,7 +23,12 @@ type TaskCreator interface {
 
 type TaskRetriever interface {
 	List(ctx context.Context) ([]Task, error)
+	ListByIDAndUserID(ctx context.Context, id, userID int) (Task, error)
 	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+}
+
+type TaskUpdater interface {
+	Update(ctx context.Context, task Task) (Task, error)
 }
 
 type SummaryEncryptor interface {

@@ -140,6 +140,21 @@ func (mr *MockTaskRetrieverMockRecorder) List(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockTaskRetriever)(nil).List), ctx)
 }
 
+// ListByIDAndUserID mocks base method.
+func (m *MockTaskRetriever) ListByIDAndUserID(ctx context.Context, id, userID int) (Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByIDAndUserID", ctx, id, userID)
+	ret0, _ := ret[0].(Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByIDAndUserID indicates an expected call of ListByIDAndUserID.
+func (mr *MockTaskRetrieverMockRecorder) ListByIDAndUserID(ctx, id, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByIDAndUserID", reflect.TypeOf((*MockTaskRetriever)(nil).ListByIDAndUserID), ctx, id, userID)
+}
+
 // ListByUserID mocks base method.
 func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int) ([]Task, error) {
 	m.ctrl.T.Helper()
@@ -153,6 +168,44 @@ func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int) ([]Tas
 func (mr *MockTaskRetrieverMockRecorder) ListByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockTaskRetriever)(nil).ListByUserID), ctx, userID)
+}
+
+// MockTaskUpdater is a mock of TaskUpdater interface.
+type MockTaskUpdater struct {
+	ctrl     *gomock.Controller
+	recorder *MockTaskUpdaterMockRecorder
+}
+
+// MockTaskUpdaterMockRecorder is the mock recorder for MockTaskUpdater.
+type MockTaskUpdaterMockRecorder struct {
+	mock *MockTaskUpdater
+}
+
+// NewMockTaskUpdater creates a new mock instance.
+func NewMockTaskUpdater(ctrl *gomock.Controller) *MockTaskUpdater {
+	mock := &MockTaskUpdater{ctrl: ctrl}
+	mock.recorder = &MockTaskUpdaterMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTaskUpdater) EXPECT() *MockTaskUpdaterMockRecorder {
+	return m.recorder
+}
+
+// Update mocks base method.
+func (m *MockTaskUpdater) Update(ctx context.Context, task Task) (Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, task)
+	ret0, _ := ret[0].(Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockTaskUpdaterMockRecorder) Update(ctx, task interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskUpdater)(nil).Update), ctx, task)
 }
 
 // MockSummaryEncryptor is a mock of SummaryEncryptor interface.

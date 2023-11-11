@@ -27,6 +27,10 @@ func (r *TaskRepository) List(ctx context.Context) ([]domain.Task, error) {
 	return []domain.Task{}, nil
 }
 
+func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, ID, userID int) (domain.Task, error) {
+	return domain.Task{}, nil
+}
+
 func (r *TaskRepository) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
 	return []domain.Task{}, nil
 }

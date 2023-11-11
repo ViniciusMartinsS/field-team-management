@@ -4,22 +4,34 @@ import (
 	"context"
 	"errors"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
+	"time"
 )
 
 type taskUseCase struct {
 	creator       domain.TaskCreator
 	retriever     domain.TaskRetriever
+	updater       domain.TaskUpdater
 	userRetriever domain.UserRetriever
 	encryptor     domain.SummaryEncryptor
 }
 
-func NewTask(creator domain.TaskCreator, retriever domain.TaskRetriever, userRetriever domain.UserRetriever, encryptor domain.SummaryEncryptor) (domain.TaskUsecase, error) {
+func NewTask(
+	creator domain.TaskCreator,
+	retriever domain.TaskRetriever,
+	updater domain.TaskUpdater,
+	userRetriever domain.UserRetriever,
+	encryptor domain.SummaryEncryptor,
+) (domain.TaskUsecase, error) {
 	if creator == nil {
 		return &taskUseCase{}, errors.New("task creator must not be nil")
 	}
 
 	if retriever == nil {
 		return &taskUseCase{}, errors.New("task retriever must not be nil")
+	}
+
+	if updater == nil {
+		return &taskUseCase{}, errors.New("task updater must not be nil")
 	}
 
 	if userRetriever == nil {
@@ -33,6 +45,7 @@ func NewTask(creator domain.TaskCreator, retriever domain.TaskRetriever, userRet
 	return &taskUseCase{
 		creator,
 		retriever,
+		updater,
 		userRetriever,
 		encryptor,
 	}, nil
@@ -70,6 +83,42 @@ func (u *taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, e
 	task.Summary = summaryEncrypted
 
 	t, err := u.creator.Add(ctx, task)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
+	return t, nil
+}
+
+func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task, error) {
+	if task.ID == 0 {
+		return domain.Task{}, errors.New("ID must not be 0")
+	}
+
+	if task.UserID == 0 {
+		return domain.Task{}, errors.New("UserID must not be 0")
+	}
+
+	tsk, err := u.retriever.ListByIDAndUserID(ctx, task.ID, task.UserID)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
+	var cp *time.Time
+	if task.Date != cp {
+		tsk.Date = task.Date
+	}
+
+	if task.Summary != "" {
+		summaryEncrypted, err := u.encryptor.Encrypt(task.Summary)
+		if err != nil {
+			return domain.Task{}, err
+		}
+
+		tsk.Summary = summaryEncrypted
+	}
+
+	t, err := u.updater.Update(ctx, task)
 	if err != nil {
 		return domain.Task{}, err
 	}
