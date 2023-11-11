@@ -26,6 +26,11 @@ type TaskRetriever interface {
 	ListByUserID(ctx context.Context, userID int) ([]Task, error)
 }
 
+type SummaryEncryptor interface {
+	Encrypt(value string) (string, error)
+	Decrypt(value string) (string, error)
+}
+
 type Task struct {
 	ID      int
 	Summary string

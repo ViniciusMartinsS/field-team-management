@@ -154,3 +154,56 @@ func (mr *MockTaskRetrieverMockRecorder) ListByUserID(ctx, userID interface{}) *
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockTaskRetriever)(nil).ListByUserID), ctx, userID)
 }
+
+// MockSummaryEncryptor is a mock of SummaryEncryptor interface.
+type MockSummaryEncryptor struct {
+	ctrl     *gomock.Controller
+	recorder *MockSummaryEncryptorMockRecorder
+}
+
+// MockSummaryEncryptorMockRecorder is the mock recorder for MockSummaryEncryptor.
+type MockSummaryEncryptorMockRecorder struct {
+	mock *MockSummaryEncryptor
+}
+
+// NewMockSummaryEncryptor creates a new mock instance.
+func NewMockSummaryEncryptor(ctrl *gomock.Controller) *MockSummaryEncryptor {
+	mock := &MockSummaryEncryptor{ctrl: ctrl}
+	mock.recorder = &MockSummaryEncryptorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockSummaryEncryptor) EXPECT() *MockSummaryEncryptorMockRecorder {
+	return m.recorder
+}
+
+// Decrypt mocks base method.
+func (m *MockSummaryEncryptor) Decrypt(value string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Decrypt", value)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Decrypt indicates an expected call of Decrypt.
+func (mr *MockSummaryEncryptorMockRecorder) Decrypt(value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decrypt", reflect.TypeOf((*MockSummaryEncryptor)(nil).Decrypt), value)
+}
+
+// Encrypt mocks base method.
+func (m *MockSummaryEncryptor) Encrypt(value string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Encrypt", value)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Encrypt indicates an expected call of Encrypt.
+func (mr *MockSummaryEncryptorMockRecorder) Encrypt(value interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encrypt", reflect.TypeOf((*MockSummaryEncryptor)(nil).Encrypt), value)
+}
