@@ -59,6 +59,10 @@ func NewTask(
 }
 
 func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
+	if userID == 0 {
+		return []domain.Task{}, errors.New("UserID must not be 0")
+	}
+
 	user, err := u.userRetriever.ListByID(ctx, userID)
 	if err != nil {
 		return []domain.Task{}, err

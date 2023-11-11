@@ -52,7 +52,7 @@ func (mr *MockTaskUsecaseMockRecorder) Add(ctx, task interface{}) *gomock.Call {
 // ListByUserID mocks base method.
 func (m *MockTaskUsecase) ListByUserID(ctx context.Context, userID int) ([]Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByID", ctx, userID)
+	ret := m.ctrl.Call(m, "ListByUserID", ctx, userID)
 	ret0, _ := ret[0].([]Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -61,7 +61,21 @@ func (m *MockTaskUsecase) ListByUserID(ctx context.Context, userID int) ([]Task,
 // ListByUserID indicates an expected call of ListByUserID.
 func (mr *MockTaskUsecaseMockRecorder) ListByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByID", reflect.TypeOf((*MockTaskUsecase)(nil).ListByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockTaskUsecase)(nil).ListByUserID), ctx, userID)
+}
+
+// Remove mocks base method.
+func (m *MockTaskUsecase) Remove(ctx context.Context, id, userID int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Remove", ctx, id, userID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Remove indicates an expected call of Remove.
+func (mr *MockTaskUsecaseMockRecorder) Remove(ctx, id, userID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskUsecase)(nil).Remove), ctx, id, userID)
 }
 
 // MockTaskCreator is a mock of TaskCreator interface.
@@ -88,10 +102,10 @@ func (m *MockTaskCreator) EXPECT() *MockTaskCreatorMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockTaskCreator) Add(ctx context.Context, task Task) (Task, error) {
+func (m *MockTaskCreator) Add(ctx context.Context, task Task) (int, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", ctx, task)
-	ret0, _ := ret[0].(Task)
+	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -158,7 +172,7 @@ func (mr *MockTaskRetrieverMockRecorder) ListByIDAndUserID(ctx, id, userID inter
 // ListByUserID mocks base method.
 func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int) ([]Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByID", ctx, userID)
+	ret := m.ctrl.Call(m, "ListByUserID", ctx, userID)
 	ret0, _ := ret[0].([]Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
@@ -167,7 +181,7 @@ func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int) ([]Tas
 // ListByUserID indicates an expected call of ListByUserID.
 func (mr *MockTaskRetrieverMockRecorder) ListByUserID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByID", reflect.TypeOf((*MockTaskRetriever)(nil).ListByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockTaskRetriever)(nil).ListByUserID), ctx, userID)
 }
 
 // MockTaskUpdater is a mock of TaskUpdater interface.
@@ -232,17 +246,17 @@ func (m *MockTaskRemover) EXPECT() *MockTaskRemoverMockRecorder {
 }
 
 // Remove mocks base method.
-func (m *MockTaskRemover) Remove(ctx context.Context, id, userID int) error {
+func (m *MockTaskRemover) Remove(ctx context.Context, id int) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Remove", ctx, id, userID)
+	ret := m.ctrl.Call(m, "Remove", ctx, id)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Remove indicates an expected call of Remove.
-func (mr *MockTaskRemoverMockRecorder) Remove(ctx, id, userID interface{}) *gomock.Call {
+func (mr *MockTaskRemoverMockRecorder) Remove(ctx, id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskRemover)(nil).Remove), ctx, id, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskRemover)(nil).Remove), ctx, id)
 }
 
 // MockSummaryEncryptor is a mock of SummaryEncryptor interface.

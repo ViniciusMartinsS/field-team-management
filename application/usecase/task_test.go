@@ -302,7 +302,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
-				d.creator.EXPECT().Add(context.Background(), task).Return(domain.Task{}, errors.New("err"))
+				d.creator.EXPECT().Add(context.Background(), task).Return(task.ID, errors.New("err"))
 			},
 			want:    domain.Task{},
 			wantErr: true,
@@ -315,7 +315,8 @@ func Test_taskUseCase_Add(t *testing.T) {
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
-				d.creator.EXPECT().Add(context.Background(), task).Return(task, nil)
+				d.creator.EXPECT().Add(context.Background(), task).Return(task.ID, nil)
+				d.encryptor.EXPECT().Decrypt(task.Summary).Return(task.Summary, nil)
 			},
 			want:    task,
 			wantErr: false,
