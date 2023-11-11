@@ -78,6 +78,8 @@ func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Ta
 		tasks, err = u.retriever.ListByUserID(ctx, userID)
 	}
 
+	// HANDLE DECRYPT
+
 	if err != nil {
 		return []domain.Task{}, err
 	}
