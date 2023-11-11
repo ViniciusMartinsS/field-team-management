@@ -139,12 +139,19 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task
 		tsk.Summary = summaryEncrypted
 	}
 
-	t, err := u.updater.Update(ctx, task)
+	err = u.updater.Update(ctx, tsk)
 	if err != nil {
 		return domain.Task{}, err
 	}
 
-	return t, nil
+	summaryDecrypt, err := u.encryptor.Decrypt(tsk.Summary)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
+	tsk.Summary = summaryDecrypt
+
+	return tsk, nil
 }
 
 func (u *taskUseCase) Remove(ctx context.Context, id, userID int) error {

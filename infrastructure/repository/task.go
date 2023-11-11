@@ -53,8 +53,21 @@ func (r *TaskRepository) List(ctx context.Context) ([]domain.Task, error) {
 	return result, nil
 }
 
-func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, ID, userID int) (domain.Task, error) {
-	return domain.Task{}, nil
+func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, id, userID int) (domain.Task, error) {
+	var result domain.Task
+
+	err := r.db.QueryRowContext(ctx, `SELECT id, summary, date, user_id FROM tasks WHERE id=? AND user_id=? AND deleted=FALSE`, id, userID).
+		Scan(&result.ID, &result.Summary, &result.Date, &result.UserID)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return result, domain.ErrTasksNotFound
+		}
+
+		return result, err
+	}
+
+	return result, nil
 }
 
 func (r *TaskRepository) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
@@ -75,8 +88,17 @@ func (r *TaskRepository) ListByUserID(ctx context.Context, userID int) ([]domain
 	return result, nil
 }
 
-func (r *TaskRepository) Update(ctx context.Context, task domain.Task) (domain.Task, error) {
-	return domain.Task{}, nil
+func (r *TaskRepository) Update(ctx context.Context, task domain.Task) error {
+	_, err := r.db.ExecContext(ctx, `UPDATE tasks SET summary=?, date=? WHERE id=? AND user_id=? AND deleted=FALSE`, task.Summary, task.Date, task.ID, task.UserID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.ErrTasksNotFound
+		}
+
+		return err
+	}
+
+	return nil
 }
 
 func (r *TaskRepository) Remove(ctx context.Context, id int) error {

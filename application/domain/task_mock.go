@@ -78,6 +78,21 @@ func (mr *MockTaskUsecaseMockRecorder) Remove(ctx, id, userID interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskUsecase)(nil).Remove), ctx, id, userID)
 }
 
+// Update mocks base method.
+func (m *MockTaskUsecase) Update(ctx context.Context, task Task) (Task, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Update", ctx, task)
+	ret0, _ := ret[0].(Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Update indicates an expected call of Update.
+func (mr *MockTaskUsecaseMockRecorder) Update(ctx, task interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockTaskUsecase)(nil).Update), ctx, task)
+}
+
 // MockTaskCreator is a mock of TaskCreator interface.
 type MockTaskCreator struct {
 	ctrl     *gomock.Controller
@@ -208,12 +223,11 @@ func (m *MockTaskUpdater) EXPECT() *MockTaskUpdaterMockRecorder {
 }
 
 // Update mocks base method.
-func (m *MockTaskUpdater) Update(ctx context.Context, task Task) (Task, error) {
+func (m *MockTaskUpdater) Update(ctx context.Context, task Task) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Update", ctx, task)
-	ret0, _ := ret[0].(Task)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // Update indicates an expected call of Update.

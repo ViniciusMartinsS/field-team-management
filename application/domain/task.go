@@ -18,6 +18,7 @@ var (
 type TaskUsecase interface {
 	Add(ctx context.Context, task Task) (Task, error)
 	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+	Update(ctx context.Context, task Task) (Task, error)
 	Remove(ctx context.Context, id, userID int) error
 }
 
@@ -32,7 +33,7 @@ type TaskRetriever interface {
 }
 
 type TaskUpdater interface {
-	Update(ctx context.Context, task Task) (Task, error)
+	Update(ctx context.Context, task Task) error
 }
 
 type TaskRemover interface {

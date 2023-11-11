@@ -16,6 +16,7 @@ func CreateTaskRoutes(r *gin.Engine, db *sqlx.DB) {
 
 	tasks.GET("", getTasks(db))
 	tasks.POST("", postTasks(db))
+	tasks.PATCH("", updateTasks(db))
 	tasks.DELETE("", removeTask(db))
 }
 
@@ -44,6 +45,25 @@ func postTasks(db *sqlx.DB) gin.HandlerFunc {
 		tasks, _ := taskUsecase.Add(context.Background(), domain.Task{
 			Summary: "This is User Task 02",
 			UserID:  2,
+		})
+
+		c.JSON(http.StatusOK, tasks)
+	}
+}
+
+func updateTasks(db *sqlx.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		taskRepository, _ := repository.NewTask(db)
+		userRepository, _ := repository.NewUser(db)
+
+		encryptor, _ := encryption.New("123456789123456789123456")
+
+		taskUsecase, _ := usecase.NewTask(taskRepository, taskRepository, taskRepository, taskRepository, userRepository, encryptor)
+		tasks, _ := taskUsecase.Update(context.Background(), domain.Task{
+			ID:      2,
+			Summary: "Be different",
+			Date:    nil,
+			UserID:  3,
 		})
 
 		c.JSON(http.StatusOK, tasks)

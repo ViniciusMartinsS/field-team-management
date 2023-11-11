@@ -435,7 +435,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
-				d.updater.EXPECT().Update(context.Background(), task).Return(domain.Task{}, errors.New("err"))
+				d.updater.EXPECT().Update(context.Background(), task).Return(errors.New("err"))
 			},
 			want:    domain.Task{},
 			wantErr: true,
@@ -449,7 +449,8 @@ func Test_taskUseCase_Update(t *testing.T) {
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
-				d.updater.EXPECT().Update(context.Background(), task).Return(task, nil)
+				d.updater.EXPECT().Update(context.Background(), task).Return(nil)
+				d.encryptor.EXPECT().Decrypt(task.Summary).Return(task.Summary, nil)
 			},
 			want:    task,
 			wantErr: false,
