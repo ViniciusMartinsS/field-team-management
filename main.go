@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"github.com/ViniciusMartinss/field-team-management/application/usecase"
 	"github.com/ViniciusMartinss/field-team-management/configuration"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/api"
+	"github.com/ViniciusMartinss/field-team-management/infrastructure/encryption"
+	"github.com/ViniciusMartinss/field-team-management/infrastructure/repository"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -28,11 +30,37 @@ func main() {
 
 	db := database.GetConnection()
 
-	fmt.Println("Hello World!")
+	userRepository, err := repository.NewUser(db)
+	if err != nil {
+		panic(err)
+	}
+
+	taskRepository, err := repository.NewTask(db)
+	if err != nil {
+		panic(err)
+	}
+
+	encryptor, err := encryption.New("123456789123456789123456")
+	if err != nil {
+		panic(err)
+	}
+
+	taskUsecase, err := usecase.NewTask(
+		taskRepository,
+		taskRepository,
+		taskRepository,
+		taskRepository,
+		userRepository,
+		encryptor,
+	)
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 
-	api.CreateTaskRoutes(r, db)
+	router := api.NewTask(r, taskUsecase)
+	router.CreateRouter()
 
 	err = r.Run()
 	if err != nil {
