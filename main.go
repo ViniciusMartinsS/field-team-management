@@ -1,51 +1,38 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
+	"github.com/ViniciusMartinss/field-team-management/configuration"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/api"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	"github.com/jmoiron/sqlx"
-	"path/filepath"
-
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
-	db, err := sql.Open("mysql", "root:root@tcp(localhost:3306)/field?multiStatements=true&parseTime=true")
+	database := configuration.NewDatabase(
+		"field",
+		"mysql",
+		"root:root@tcp(localhost:3306)/field?multiStatements=true&parseTime=true",
+	)
+
+	err := database.Connect()
 	if err != nil {
 		panic(err)
 	}
 
-	driver, err := mysql.WithInstance(db, &mysql.Config{})
+	err = database.Migrate("./migrations")
 	if err != nil {
 		panic(err)
 	}
 
-	migrations, err := filepath.Abs("./migrations")
-	if err != nil {
-		panic(err)
-	}
-
-	m, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file:///%s", migrations), "field", driver)
-	if err != nil {
-		panic(err)
-	}
-
-	if err := m.Up(); err != nil {
-		if err.Error() != "no change" {
-			panic(err)
-		}
-	}
+	db := database.GetConnection()
 
 	fmt.Println("Hello World!")
 
 	r := gin.Default()
 
-	api.CreateTaskRoutes(r, sqlx.NewDb(db, "mysql"))
+	api.CreateTaskRoutes(r, db)
 
 	err = r.Run()
 	if err != nil {
