@@ -82,19 +82,29 @@ func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Ta
 }
 
 func (u *taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, error) {
+	// LATER VALIDATE USER & TASK.USED_ID
+
 	summaryEncrypted, err := u.encryptor.Encrypt(task.Summary)
 	if err != nil {
-		// Handle error to be more friendly
 		return domain.Task{}, err
 	}
 	task.Summary = summaryEncrypted
 
-	t, err := u.creator.Add(ctx, task)
+	id, err := u.creator.Add(ctx, task)
 	if err != nil {
 		return domain.Task{}, err
 	}
 
-	return t, nil
+	task.ID = id
+
+	summaryDecrypt, err := u.encryptor.Decrypt(task.Summary)
+	if err != nil {
+		return domain.Task{}, err
+	}
+
+	task.Summary = summaryDecrypt
+
+	return task, nil
 }
 
 func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task, error) {

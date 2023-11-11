@@ -20,8 +20,19 @@ func NewTask(db *sqlx.DB) (*TaskRepository, error) {
 	return &TaskRepository{db}, nil
 }
 
-func (r *TaskRepository) Add(ctx context.Context, task domain.Task) (domain.Task, error) {
-	return domain.Task{}, nil
+func (r *TaskRepository) Add(ctx context.Context, task domain.Task) (int, error) {
+	var id int64
+
+	record, err := r.db.ExecContext(ctx, `INSERT INTO tasks (summary, date, user_id) VALUES (?, ?, ?)`, task.Summary, task.Date, task.UserID)
+	if err != nil {
+		return int(id), err
+	}
+
+	if id, err = record.LastInsertId(); err != nil {
+		return int(id), err
+	}
+
+	return int(id), nil
 }
 
 func (r *TaskRepository) List(ctx context.Context) ([]domain.Task, error) {

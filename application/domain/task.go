@@ -21,7 +21,7 @@ type TaskUsecase interface {
 }
 
 type TaskCreator interface {
-	Add(ctx context.Context, task Task) (Task, error)
+	Add(ctx context.Context, task Task) (int, error)
 }
 
 type TaskRetriever interface {
