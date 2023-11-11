@@ -555,7 +555,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			},
 			setDependencies: func(d *dependencies) {
 				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{id, 1}, nil)
-				d.remover.EXPECT().Remove(context.Background(), id, id).Return(nil)
+				d.remover.EXPECT().Remove(context.Background(), id).Return(nil)
 			},
 			wantErr: false,
 		},

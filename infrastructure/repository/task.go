@@ -79,7 +79,11 @@ func (r *TaskRepository) Update(ctx context.Context, task domain.Task) (domain.T
 	return domain.Task{}, nil
 }
 
-func (r *TaskRepository) Remove(ctx context.Context, id, userID int) error {
+func (r *TaskRepository) Remove(ctx context.Context, id int) error {
+	if _, err := r.db.ExecContext(ctx, `UPDATE tasks SET deleted=TRUE WHERE id=?`, id); err != nil {
+		return err
+	}
+
 	return nil
 }
 

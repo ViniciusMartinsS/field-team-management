@@ -16,6 +16,7 @@ func CreateTaskRoutes(r *gin.Engine, db *sqlx.DB) {
 
 	tasks.GET("", getTasks(db))
 	tasks.POST("", postTasks(db))
+	tasks.DELETE("", removeTask(db))
 }
 
 func getTasks(db *sqlx.DB) gin.HandlerFunc {
@@ -46,5 +47,19 @@ func postTasks(db *sqlx.DB) gin.HandlerFunc {
 		})
 
 		c.JSON(http.StatusOK, tasks)
+	}
+}
+
+func removeTask(db *sqlx.DB) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		taskRepository, _ := repository.NewTask(db)
+		userRepository, _ := repository.NewUser(db)
+
+		encryptor, _ := encryption.New("123456789123456789123456")
+
+		taskUsecase, _ := usecase.NewTask(taskRepository, taskRepository, taskRepository, taskRepository, userRepository, encryptor)
+		err := taskUsecase.Remove(context.Background(), 1, 1)
+
+		c.JSON(http.StatusNoContent, err)
 	}
 }

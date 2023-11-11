@@ -18,6 +18,7 @@ var (
 type TaskUsecase interface {
 	Add(ctx context.Context, task Task) (Task, error)
 	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+	Remove(ctx context.Context, id, userID int) error
 }
 
 type TaskCreator interface {
@@ -35,7 +36,7 @@ type TaskUpdater interface {
 }
 
 type TaskRemover interface {
-	Remove(ctx context.Context, id, userID int) error
+	Remove(ctx context.Context, id int) error
 }
 
 type SummaryEncryptor interface {

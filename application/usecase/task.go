@@ -161,5 +161,5 @@ func (u *taskUseCase) Remove(ctx context.Context, id, userID int) error {
 		return errors.New("forbidden")
 	}
 
-	return u.remover.Remove(ctx, id, userID)
+	return u.remover.Remove(ctx, id)
 }
