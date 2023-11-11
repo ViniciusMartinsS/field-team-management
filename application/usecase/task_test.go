@@ -177,38 +177,38 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on ListByUserID when fetching user",
+			name: "error on ListByID when fetching user",
 			args: args{
 				ctx:    context.Background(),
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{}, errors.New("err"))
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
 			wantErr: true,
 		},
 		{
-			name: "error on ListByUserID when fetching tasks by manager",
+			name: "error on ListByID when fetching tasks by manager",
 			args: args{
 				ctx:    context.Background(),
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{1, 1}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 1}, nil)
 				d.retriever.EXPECT().List(context.Background()).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
 			wantErr: true,
 		},
 		{
-			name: "error on ListByUserID when fetching tasks by technician",
+			name: "error on ListByID when fetching tasks by technician",
 			args: args{
 				ctx:    context.Background(),
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{1, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 2}, nil)
 				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
@@ -221,7 +221,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{1, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 2}, nil)
 				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return(tasks, nil)
 			},
 			want:    tasks,
@@ -249,7 +249,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 
 			got, err := u.ListByUserID(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ListByUserID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ListByID() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 
@@ -523,14 +523,14 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on ListByUserID",
+			name: "error on ListByID",
 			args: args{
 				ctx:    context.Background(),
 				id:     id,
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{}, errors.New("err"))
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{}, errors.New("err"))
 			},
 			wantErr: true,
 		},
@@ -542,7 +542,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{id, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{id, 2}, nil)
 			},
 			wantErr: true,
 		},
@@ -554,7 +554,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByUserID(context.Background(), id).Return(domain.User{id, 1}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{id, 1}, nil)
 				d.remover.EXPECT().Remove(context.Background(), id, id).Return(nil)
 			},
 			wantErr: false,

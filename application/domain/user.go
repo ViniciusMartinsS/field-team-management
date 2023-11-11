@@ -4,7 +4,10 @@ package domain
 
 import (
 	"context"
+	"errors"
 )
+
+var ErrUserNotFound = errors.New("user not found")
 
 const (
 	Manager    = "manager"
@@ -17,7 +20,7 @@ type User struct {
 }
 
 type UserRetriever interface {
-	ListByUserID(ctx context.Context, userID int) (User, error)
+	ListByID(ctx context.Context, userID int) (User, error)
 }
 
 func (u *User) GetRole() string {

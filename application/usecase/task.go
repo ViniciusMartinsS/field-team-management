@@ -59,7 +59,7 @@ func NewTask(
 }
 
 func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
-	user, err := u.userRetriever.ListByUserID(ctx, userID)
+	user, err := u.userRetriever.ListByID(ctx, userID)
 	if err != nil {
 		return []domain.Task{}, err
 	}
@@ -142,7 +142,7 @@ func (u *taskUseCase) Remove(ctx context.Context, id, userID int) error {
 		return errors.New("UserID must not be 0")
 	}
 
-	user, err := u.userRetriever.ListByUserID(ctx, userID)
+	user, err := u.userRetriever.ListByID(ctx, userID)
 	if err != nil {
 		return err
 	}

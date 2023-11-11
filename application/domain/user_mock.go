@@ -34,17 +34,17 @@ func (m *MockUserRetriever) EXPECT() *MockUserRetrieverMockRecorder {
 	return m.recorder
 }
 
-// ListByUserID mocks base method.
-func (m *MockUserRetriever) ListByUserID(ctx context.Context, userID int) (User, error) {
+// ListByID mocks base method.
+func (m *MockUserRetriever) ListByID(ctx context.Context, userID int) (User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByUserID", ctx, userID)
+	ret := m.ctrl.Call(m, "ListByID", ctx, userID)
 	ret0, _ := ret[0].(User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListByUserID indicates an expected call of ListByUserID.
-func (mr *MockUserRetrieverMockRecorder) ListByUserID(ctx, userID interface{}) *gomock.Call {
+// ListByID indicates an expected call of ListByID.
+func (mr *MockUserRetrieverMockRecorder) ListByID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockUserRetriever)(nil).ListByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByID", reflect.TypeOf((*MockUserRetriever)(nil).ListByID), ctx, userID)
 }

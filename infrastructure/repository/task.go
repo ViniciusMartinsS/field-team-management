@@ -34,3 +34,11 @@ func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, ID, userID int) 
 func (r *TaskRepository) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
 	return []domain.Task{}, nil
 }
+
+func (r *TaskRepository) Update(ctx context.Context, task domain.Task) (domain.Task, error) {
+	return domain.Task{}, nil
+}
+
+func (r *TaskRepository) Remove(ctx context.Context, id, userID int) error {
+	return nil
+}

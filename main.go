@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/jmoiron/sqlx"
 	"path/filepath"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -35,14 +36,16 @@ func main() {
 	}
 
 	if err := m.Up(); err != nil {
-		panic(err)
+		if err.Error() != "no change" {
+			panic(err)
+		}
 	}
 
 	fmt.Println("Hello World!")
 
 	r := gin.Default()
 
-	api.CreateTaskRoutes(r)
+	api.CreateTaskRoutes(r, sqlx.NewDb(db, "mysql"))
 
 	err = r.Run()
 	if err != nil {
