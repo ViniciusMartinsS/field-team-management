@@ -22,7 +22,6 @@ type User struct {
 }
 
 type UserRetriever interface {
-	ListByID(ctx context.Context, userID int) (User, error)
 	ListByEmail(ctx context.Context, email string) (User, error)
 }
 

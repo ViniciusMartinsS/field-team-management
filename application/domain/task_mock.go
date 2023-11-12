@@ -65,17 +65,17 @@ func (mr *MockTaskUsecaseMockRecorder) ListByUser(ctx, user interface{}) *gomock
 }
 
 // Remove mocks base method.
-func (m *MockTaskUsecase) Remove(ctx context.Context, id, userID int) error {
+func (m *MockTaskUsecase) Remove(ctx context.Context, id int, user User) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Remove", ctx, id, userID)
+	ret := m.ctrl.Call(m, "Remove", ctx, id, user)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Remove indicates an expected call of Remove.
-func (mr *MockTaskUsecaseMockRecorder) Remove(ctx, id, userID interface{}) *gomock.Call {
+func (mr *MockTaskUsecaseMockRecorder) Remove(ctx, id, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskUsecase)(nil).Remove), ctx, id, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskUsecase)(nil).Remove), ctx, id, user)
 }
 
 // Update mocks base method.

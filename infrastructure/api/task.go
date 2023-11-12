@@ -73,11 +73,6 @@ func (h *TaskAPIHandler) get(c *gin.Context) {
 
 	result, err := h.taskUsecase.ListByUser(context.Background(), user)
 	if err != nil {
-		if errors.Is(err, domain.ErrUserNotFound) {
-			c.JSON(http.StatusBadRequest, "user not found")
-			return
-		}
-
 		if errors.Is(err, domain.ErrTasksNotFound) {
 			c.JSON(http.StatusBadRequest, "task not found")
 			return

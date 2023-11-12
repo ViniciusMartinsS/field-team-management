@@ -183,7 +183,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on ListByID when fetching tasks by manager",
+			name: "error on List when fetching tasks by manager",
 			args: args{
 				ctx:  context.Background(),
 				user: managerUser,
@@ -195,7 +195,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on ListByID when fetching tasks by technician",
+			name: "error on ListByUserID when fetching tasks by technician",
 			args: args{
 				ctx:  context.Background(),
 				user: technicalUser,

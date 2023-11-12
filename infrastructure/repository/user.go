@@ -20,21 +20,6 @@ func NewUser(db *sqlx.DB) (*UserRepository, error) {
 	return &UserRepository{db}, nil
 }
 
-func (r *UserRepository) ListByID(ctx context.Context, id int) (domain.User, error) {
-	var result domain.User
-
-	err := r.db.QueryRowContext(ctx, `SELECT id, role_id FROM users WHERE id=? AND deleted=FALSE`, id).Scan(&result.ID, &result.RoleID)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return result, domain.ErrUserNotFound
-		}
-
-		return result, err
-	}
-
-	return result, nil
-}
-
 func (r *UserRepository) ListByEmail(ctx context.Context, email string) (domain.User, error) {
 	var result domain.User
 
