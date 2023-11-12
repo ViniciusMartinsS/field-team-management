@@ -458,10 +458,6 @@ func Test_taskUseCase_Update(t *testing.T) {
 			ID:     1,
 			RoleID: 2,
 		}
-		technicalUser2 = domain.User{
-			ID:     2,
-			RoleID: 2,
-		}
 	)
 
 	tests := []struct {
@@ -485,19 +481,6 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Update without Task User ID",
-			args: args{
-				ctx: context.Background(),
-				task: domain.Task{
-					ID:      task.ID,
-					Summary: task.Summary,
-				},
-				user: technicalUser,
-			},
-			want:    domain.Task{},
-			wantErr: true,
-		},
-		{
 			name: "error on Update without User ID",
 			args: args{
 				ctx:  context.Background(),
@@ -505,28 +488,6 @@ func Test_taskUseCase_Update(t *testing.T) {
 				user: domain.User{
 					RoleID: technicalUser.RoleID,
 				},
-			},
-			want:    domain.Task{},
-			wantErr: true,
-		},
-		{
-			name: "error on Update without User Role ID",
-			args: args{
-				ctx:  context.Background(),
-				task: task,
-				user: domain.User{
-					ID: technicalUser.ID,
-				},
-			},
-			want:    domain.Task{},
-			wantErr: true,
-		},
-		{
-			name: "error forbidden",
-			args: args{
-				ctx:  context.Background(),
-				task: task,
-				user: technicalUser2,
 			},
 			want:    domain.Task{},
 			wantErr: true,

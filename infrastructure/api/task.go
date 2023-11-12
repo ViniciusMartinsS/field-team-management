@@ -25,10 +25,8 @@ type taskCreateRequest struct {
 }
 
 type taskUpdateRequest struct {
-	ID      int    `json:"id" binding:"required"`
 	Summary string `json:"summary" binding:"max=2500"`
 	Date    string `json:"date"`
-	UserID  int    `json:"user_id" binding:"required"`
 }
 
 type TaskAPIHandler struct {
@@ -64,7 +62,7 @@ func (h *TaskAPIHandler) CreateRouter() {
 
 	tasks.GET("", h.get)
 	tasks.POST("", h.post)
-	tasks.PATCH("", h.patch)
+	tasks.PATCH("/:id", h.patch)
 	tasks.DELETE("/:id", h.remove)
 }
 
@@ -117,6 +115,12 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 }
 
 func (h *TaskAPIHandler) patch(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, "invalid id")
+		return
+	}
+
 	var request taskUpdateRequest
 
 	if err := c.ShouldBindWith(&request, binding.JSON); err != nil {
@@ -131,10 +135,9 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 	}
 
 	task := domain.Task{
-		ID:      request.ID,
+		ID:      id,
 		Summary: request.Summary,
 		Date:    parsedDate,
-		UserID:  request.UserID,
 	}
 
 	user := identifyUserRequester(c)
