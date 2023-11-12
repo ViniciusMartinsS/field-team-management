@@ -195,7 +195,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 1}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 1}, nil)
 				d.retriever.EXPECT().List(context.Background()).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
@@ -208,7 +208,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 2}, nil)
 				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
@@ -221,7 +221,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{1, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 2}, nil)
 				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return(tasks, nil)
 			},
 			want:    tasks,
@@ -544,7 +544,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{id, 2}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: id, RoleID: 2}, nil)
 			},
 			wantErr: true,
 		},
@@ -556,7 +556,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 				userID: id,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{id, 1}, nil)
+				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: id, RoleID: 1}, nil)
 				d.remover.EXPECT().Remove(context.Background(), id).Return(nil)
 			},
 			wantErr: false,
