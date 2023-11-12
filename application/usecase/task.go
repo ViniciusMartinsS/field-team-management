@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
+	"log"
 	"time"
 )
 
@@ -78,13 +79,24 @@ func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Ta
 		tasks, err = u.retriever.ListByUserID(ctx, userID)
 	}
 
-	// HANDLE DECRYPT
-
 	if err != nil {
 		return []domain.Task{}, err
 	}
 
-	return tasks, nil
+	var decryptedTasks []domain.Task
+
+	for _, t := range tasks {
+		summaryDecrypt, err := u.encryptor.Decrypt(t.Summary)
+		if err != nil {
+			log.Printf("Error decrypting task summary: %v", err) // Later: send to metrics/observability
+			continue
+		}
+
+		t.Summary = summaryDecrypt
+		decryptedTasks = append(decryptedTasks, t)
+	}
+
+	return decryptedTasks, nil
 }
 
 func (u *taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, error) {

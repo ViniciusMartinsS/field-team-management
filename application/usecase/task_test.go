@@ -151,6 +151,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 	type dependencies struct {
 		retriever     *domain.MockTaskRetriever
 		userRetriever *domain.MockUserRetriever
+		encryptor     *domain.MockSummaryEncryptor
 	}
 
 	var (
@@ -222,6 +223,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 			setDependencies: func(d *dependencies) {
 				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 2}, nil)
 				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return(tasks, nil)
+				d.encryptor.EXPECT().Decrypt(tasks[0].Summary).Return(tasks[0].Summary, nil)
 			},
 			want:    tasks,
 			wantErr: false,
@@ -235,6 +237,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 			d := dependencies{
 				retriever:     domain.NewMockTaskRetriever(ctrl),
 				userRetriever: domain.NewMockUserRetriever(ctrl),
+				encryptor:     domain.NewMockSummaryEncryptor(ctrl),
 			}
 
 			if tt.setDependencies != nil {
@@ -244,6 +247,7 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 			u := &taskUseCase{
 				retriever:     d.retriever,
 				userRetriever: d.userRetriever,
+				encryptor:     d.encryptor,
 			}
 
 			got, err := u.ListByUserID(tt.args.ctx, tt.args.userID)
