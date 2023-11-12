@@ -44,6 +44,9 @@ func (a *authenticator) IsAccessTokenValid(token string) (bool, map[string]any, 
 			return []byte(a.key), nil
 		},
 	)
+	if err != nil {
+		return false, nil, err
+	}
 
 	claimsResult := make(map[string]any)
 	for k, c := range claims {

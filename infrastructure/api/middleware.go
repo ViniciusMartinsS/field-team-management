@@ -1,13 +1,13 @@
 package api
 
 import (
-	jwtAuthenticator "github.com/ViniciusMartinss/field-team-management/infrastructure/jwt"
+	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
 )
 
-func Authenticator() gin.HandlerFunc {
+func Authenticator(authenticator domain.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 
@@ -21,22 +21,9 @@ func Authenticator() gin.HandlerFunc {
 			token = strings.TrimSpace(strings.Replace(token, "Bearer", "", -1))
 		}
 
-		authenticator, err := jwtAuthenticator.New("my_secret_key")
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "")
-			c.Abort()
-			return
-		}
-
 		valid, claims, err := authenticator.IsAccessTokenValid(token)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, "")
-			c.Abort()
-			return
-		}
-
-		if !valid {
-			c.JSON(http.StatusInternalServerError, "")
+		if !valid || err != nil {
+			c.JSON(http.StatusUnauthorized, "")
 			c.Abort()
 			return
 		}

@@ -33,21 +33,24 @@ type taskUpdateRequest struct {
 }
 
 type TaskAPIHandler struct {
-	router      *gin.Engine
-	taskUsecase domain.TaskUsecase
+	router        *gin.Engine
+	authenticator domain.Authenticator
+	taskUsecase   domain.TaskUsecase
 }
 
-func NewTask(r *gin.Engine, taskUsecase domain.TaskUsecase) *TaskAPIHandler {
+func NewTask(r *gin.Engine, authenticator domain.Authenticator, taskUsecase domain.TaskUsecase) *TaskAPIHandler {
+	// Todo Request validations & tests
 	return &TaskAPIHandler{
-		router:      r,
-		taskUsecase: taskUsecase,
+		router:        r,
+		authenticator: authenticator,
+		taskUsecase:   taskUsecase,
 	}
 }
 
 func (h *TaskAPIHandler) CreateRouter() {
 	v1 := h.router.Group("v1")
 	tasks := v1.Group("tasks")
-	tasks.Use(Authenticator())
+	tasks.Use(Authenticator(h.authenticator))
 
 	tasks.GET("", h.get)
 	tasks.POST("", h.post)
