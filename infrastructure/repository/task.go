@@ -116,7 +116,7 @@ func rowsToTask(rows *sql.Rows) ([]domain.Task, error) {
 		var task domain.Task
 
 		if err := rows.Scan(&task.ID, &task.Summary, &task.Date, &task.UserID); err != nil {
-			return []domain.Task{}, errors.New("internal server error")
+			return []domain.Task{}, err
 		}
 
 		result = append(result, task)

@@ -11,6 +11,12 @@ import (
 	"time"
 )
 
+const (
+	badRequestMessage     = "malformed request"
+	internalServerMessage = "internal server error"
+	forbiddenMessage      = "not allowed to perform this action"
+)
+
 type taskCreateRequest struct {
 	Summary string `json:"summary" binding:"required,max=2500"`
 	Date    string `json:"date"`
@@ -93,19 +99,19 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 	var request taskCreateRequest
 
 	if err := c.ShouldBindBodyWith(&request, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, "required fields were not sent or with invalid content")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	parsedDate, err := parseDate(request.Date)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid date format")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	task, err := domain.NewTask(request.Summary, parsedDate, request.UserID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
@@ -113,11 +119,16 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 
 	result, err := h.taskUsecase.Add(context.Background(), task, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "internal server error")
+		if errors.Is(err, domain.ErrUserNotAllowed) {
+			c.JSON(http.StatusForbidden, toResponse(false, forbiddenMessage))
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, toResponse(false, internalServerMessage))
 		return
 	}
 
-	c.JSON(http.StatusOK, formatResponseSingle(result))
+	c.JSON(http.StatusOK, toResponse(true, formatResponseSingle(result)))
 }
 
 func (h *TaskAPIHandler) patch(c *gin.Context) {

@@ -106,7 +106,7 @@ func (u *taskUseCase) Add(ctx context.Context, task domain.Task, user domain.Use
 	}
 
 	if user.ID != task.UserID {
-		return domain.Task{}, errors.New("forbidden")
+		return domain.Task{}, domain.ErrUserNotAllowed
 	}
 
 	summaryEncrypted, err := u.encryptor.Encrypt(task.Summary)
@@ -189,7 +189,7 @@ func (u *taskUseCase) Remove(ctx context.Context, id int, user domain.User) erro
 	}
 
 	if user.GetRole() == domain.Technician {
-		return errors.New("forbidden")
+		return domain.ErrUserNotAllowed
 	}
 
 	return u.remover.Remove(ctx, id)
