@@ -88,7 +88,7 @@ func (h *TaskAPIHandler) get(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, toResponse(false, "internal server error"))
+		c.JSON(http.StatusInternalServerError, toResponse(false, internalServerMessage))
 		return
 	}
 
@@ -176,15 +176,24 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 func (h *TaskAPIHandler) remove(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid id")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	user := identifyUserRequester(c)
 
 	err = h.taskUsecase.Remove(context.Background(), id, user)
+	if err != nil {
+		if errors.Is(err, domain.ErrUserNotAllowed) {
+			c.JSON(http.StatusForbidden, toResponse(false, forbiddenMessage))
+			return
+		}
 
-	c.JSON(http.StatusNoContent, err)
+		c.JSON(http.StatusInternalServerError, toResponse(false, internalServerMessage))
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }
 
 func identifyUserRequester(c *gin.Context) domain.User {
