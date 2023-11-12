@@ -44,11 +44,11 @@ func NewTask(
 	}
 
 	return &taskUseCase{
-		creator,
-		retriever,
-		updater,
-		remover,
-		encryptor,
+		creator:   creator,
+		retriever: retriever,
+		updater:   updater,
+		remover:   remover,
+		encryptor: encryptor,
 	}, nil
 }
 
@@ -81,7 +81,7 @@ func (u *taskUseCase) ListByUser(ctx context.Context, user domain.User) ([]domai
 	for _, t := range tasks {
 		summaryDecrypt, err := u.encryptor.Decrypt(t.Summary)
 		if err != nil {
-			log.Printf("Error decrypting task summary: %v", err) // Later: send to metrics/observability
+			log.Printf("error decrypting task summary: %v", err) // Later: send to metrics/observability
 			continue
 		}
 
@@ -146,8 +146,8 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 		return domain.Task{}, err
 	}
 
-	var cp *time.Time
-	if task.Date != cp {
+	var emptyTime *time.Time
+	if task.Date != emptyTime {
 		tsk.Date = task.Date
 	}
 

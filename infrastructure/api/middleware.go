@@ -7,8 +7,6 @@ import (
 	"strings"
 )
 
-const unauthorizedMessage = "unauthorized"
-
 func Authenticator(authenticator domain.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")

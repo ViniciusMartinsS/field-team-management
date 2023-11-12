@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+const unauthorizedMessage = "unauthorized"
+
 type authRequest struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
@@ -45,15 +47,20 @@ func (h *AuthAPIHandler) post(c *gin.Context) {
 	var request authRequest
 
 	if err := c.ShouldBindBodyWith(&request, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, "required fields were not sent or with invalid content")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	result, err := h.authUsecase.Authenticate(context.Background(), request.Email, request.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "internal server error")
+		if errors.Is(err, domain.ErrUserNotFound) || errors.Is(err, domain.ErrUserInvalidPass) {
+			c.JSON(http.StatusBadRequest, toResponse(false, unauthorizedMessage))
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, toResponse(false, internalServerMessage))
 		return
 	}
 
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusOK, toResponse(true, result))
 }

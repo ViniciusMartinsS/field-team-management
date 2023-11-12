@@ -9,6 +9,6 @@ type AuthUsecase interface {
 }
 
 type Authenticator interface {
-	GenerateAccessToken(User) (string, error)
-	IsAccessTokenValid(string) (bool, map[string]any, error)
+	GenerateAccessToken(user User) (string, error)
+	IsAccessTokenValid(token string) (bool, map[string]any, error)
 }

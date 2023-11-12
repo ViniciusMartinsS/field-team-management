@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	ErrUserNotFound   = errors.New("user not found")
-	ErrUserNotAllowed = errors.New("forbidden")
+	ErrUserNotFound    = errors.New("user not found")
+	ErrUserNotAllowed  = errors.New("forbidden")
+	ErrUserInvalidPass = errors.New("invalid password")
 )
 
 const (

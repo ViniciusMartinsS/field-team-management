@@ -35,7 +35,7 @@ func (u *authUseCase) Authenticate(ctx context.Context, email, password string) 
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return "", errors.New("not authorized")
+		return "", domain.ErrUserInvalidPass
 	}
 
 	token, err := u.authenticator.GenerateAccessToken(user)

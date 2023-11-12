@@ -73,24 +73,24 @@ func (m *MockAuthenticator) EXPECT() *MockAuthenticatorMockRecorder {
 }
 
 // GenerateAccessToken mocks base method.
-func (m *MockAuthenticator) GenerateAccessToken(arg0 User) (string, error) {
+func (m *MockAuthenticator) GenerateAccessToken(user User) (string, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateAccessToken", arg0)
+	ret := m.ctrl.Call(m, "GenerateAccessToken", user)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GenerateAccessToken indicates an expected call of GenerateAccessToken.
-func (mr *MockAuthenticatorMockRecorder) GenerateAccessToken(arg0 interface{}) *gomock.Call {
+func (mr *MockAuthenticatorMockRecorder) GenerateAccessToken(user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAuthenticator)(nil).GenerateAccessToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockAuthenticator)(nil).GenerateAccessToken), user)
 }
 
 // IsAccessTokenValid mocks base method.
-func (m *MockAuthenticator) IsAccessTokenValid(arg0 string) (bool, map[string]any, error) {
+func (m *MockAuthenticator) IsAccessTokenValid(token string) (bool, map[string]any, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsAccessTokenValid", arg0)
+	ret := m.ctrl.Call(m, "IsAccessTokenValid", token)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(map[string]any)
 	ret2, _ := ret[2].(error)
@@ -98,7 +98,7 @@ func (m *MockAuthenticator) IsAccessTokenValid(arg0 string) (bool, map[string]an
 }
 
 // IsAccessTokenValid indicates an expected call of IsAccessTokenValid.
-func (mr *MockAuthenticatorMockRecorder) IsAccessTokenValid(arg0 interface{}) *gomock.Call {
+func (mr *MockAuthenticatorMockRecorder) IsAccessTokenValid(token interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAccessTokenValid", reflect.TypeOf((*MockAuthenticator)(nil).IsAccessTokenValid), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsAccessTokenValid", reflect.TypeOf((*MockAuthenticator)(nil).IsAccessTokenValid), token)
 }
