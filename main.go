@@ -5,6 +5,7 @@ import (
 	"github.com/ViniciusMartinss/field-team-management/configuration"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/api"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/encryption"
+	"github.com/ViniciusMartinss/field-team-management/infrastructure/jwt"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/repository"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -57,10 +58,23 @@ func main() {
 		panic(err)
 	}
 
+	authenticator, err := jwt.New("my_secret_key")
+	if err != nil {
+		panic(err)
+	}
+
+	authUsecase, err := usecase.NewAuth(authenticator, userRepository)
+	if err != nil {
+		panic(err)
+	}
+
 	r := gin.Default()
 
-	router := api.NewTask(r, taskUsecase)
-	router.CreateRouter()
+	taskRouter := api.NewTask(r, taskUsecase)
+	taskRouter.CreateRouter()
+
+	authRouter := api.NewAuth(r, authUsecase)
+	authRouter.CreateRouter()
 
 	err = r.Run()
 	if err != nil {

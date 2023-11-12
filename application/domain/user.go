@@ -15,12 +15,19 @@ const (
 )
 
 type User struct {
-	ID     int
-	RoleID int
+	ID       int
+	Email    string
+	Password string
+	RoleID   int
 }
 
 type UserRetriever interface {
 	ListByID(ctx context.Context, userID int) (User, error)
+	ListByEmail(ctx context.Context, email string) (User, error)
+}
+
+type UserAuthenticator interface {
+	GenerateAccessToken(User) (string, error)
 }
 
 func (u *User) GetRole() string {

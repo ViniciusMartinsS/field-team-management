@@ -34,3 +34,18 @@ func (r *UserRepository) ListByID(ctx context.Context, id int) (domain.User, err
 
 	return result, nil
 }
+
+func (r *UserRepository) ListByEmail(ctx context.Context, email string) (domain.User, error) {
+	var result domain.User
+
+	err := r.db.QueryRowContext(ctx, `SELECT id, email, password, role_id FROM users WHERE email=? AND deleted=FALSE`, email).Scan(&result.ID, &result.Email, &result.Password, &result.RoleID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return result, domain.ErrUserNotFound
+		}
+
+		return result, err
+	}
+
+	return result, nil
+}

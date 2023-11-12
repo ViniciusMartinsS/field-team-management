@@ -34,6 +34,21 @@ func (m *MockUserRetriever) EXPECT() *MockUserRetrieverMockRecorder {
 	return m.recorder
 }
 
+// ListByEmail mocks base method.
+func (m *MockUserRetriever) ListByEmail(ctx context.Context, email string) (User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListByEmail", ctx, email)
+	ret0, _ := ret[0].(User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListByEmail indicates an expected call of ListByEmail.
+func (mr *MockUserRetrieverMockRecorder) ListByEmail(ctx, email interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByEmail", reflect.TypeOf((*MockUserRetriever)(nil).ListByEmail), ctx, email)
+}
+
 // ListByID mocks base method.
 func (m *MockUserRetriever) ListByID(ctx context.Context, userID int) (User, error) {
 	m.ctrl.T.Helper()
@@ -47,4 +62,42 @@ func (m *MockUserRetriever) ListByID(ctx context.Context, userID int) (User, err
 func (mr *MockUserRetrieverMockRecorder) ListByID(ctx, userID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByID", reflect.TypeOf((*MockUserRetriever)(nil).ListByID), ctx, userID)
+}
+
+// MockUserAuthenticator is a mock of UserAuthenticator interface.
+type MockUserAuthenticator struct {
+	ctrl     *gomock.Controller
+	recorder *MockUserAuthenticatorMockRecorder
+}
+
+// MockUserAuthenticatorMockRecorder is the mock recorder for MockUserAuthenticator.
+type MockUserAuthenticatorMockRecorder struct {
+	mock *MockUserAuthenticator
+}
+
+// NewMockUserAuthenticator creates a new mock instance.
+func NewMockUserAuthenticator(ctrl *gomock.Controller) *MockUserAuthenticator {
+	mock := &MockUserAuthenticator{ctrl: ctrl}
+	mock.recorder = &MockUserAuthenticatorMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockUserAuthenticator) EXPECT() *MockUserAuthenticatorMockRecorder {
+	return m.recorder
+}
+
+// GenerateAccessToken mocks base method.
+func (m *MockUserAuthenticator) GenerateAccessToken(arg0 User) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateAccessToken", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GenerateAccessToken indicates an expected call of GenerateAccessToken.
+func (mr *MockUserAuthenticatorMockRecorder) GenerateAccessToken(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAccessToken", reflect.TypeOf((*MockUserAuthenticator)(nil).GenerateAccessToken), arg0)
 }
