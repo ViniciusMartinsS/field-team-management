@@ -3,7 +3,6 @@ package api
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -70,13 +69,15 @@ func (h *TaskAPIHandler) CreateRouter() {
 }
 
 func (h *TaskAPIHandler) get(c *gin.Context) {
-	aa := c.MustGet("user_id").(float64)
-	bb := c.MustGet("role_id").(float64)
+	userID := c.MustGet("user_id").(float64)
+	roleID := c.MustGet("role_id").(float64)
 
-	fmt.Println(aa, bb)
-
-	// GET USER ID FROM TOKEN
-	result, err := h.taskUsecase.ListByUserID(context.Background(), 2)
+	result, err := h.taskUsecase.ListByUser(
+		context.Background(),
+		domain.User{
+			ID:     int(userID),
+			RoleID: int(roleID)},
+	)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
 			c.JSON(http.StatusBadRequest, "user not found")

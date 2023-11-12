@@ -17,7 +17,7 @@ var (
 
 type TaskUsecase interface {
 	Add(ctx context.Context, task Task) (Task, error)
-	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+	ListByUser(ctx context.Context, user User) ([]Task, error)
 	Update(ctx context.Context, task Task) (Task, error)
 	Remove(ctx context.Context, id, userID int) error
 }

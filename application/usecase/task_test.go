@@ -147,27 +147,33 @@ func TestNewTask(t *testing.T) {
 	}
 }
 
-func Test_taskUseCase_ListByUserID(t *testing.T) {
+func Test_taskUseCase_ListByUser(t *testing.T) {
 	type dependencies struct {
-		retriever     *domain.MockTaskRetriever
-		userRetriever *domain.MockUserRetriever
-		encryptor     *domain.MockSummaryEncryptor
+		retriever *domain.MockTaskRetriever
+		encryptor *domain.MockSummaryEncryptor
 	}
 
 	var (
-		id    = 1
 		tasks = []domain.Task{
 			{
-				ID:      id,
+				ID:      1,
 				Summary: "task summary test",
-				UserID:  id,
+				UserID:  1,
 			},
+		}
+		managerUser = domain.User{
+			ID:     1,
+			RoleID: 1,
+		}
+		technicalUser = domain.User{
+			ID:     2,
+			RoleID: 2,
 		}
 	)
 
 	type args struct {
-		ctx    context.Context
-		userID int
+		ctx  context.Context
+		user domain.User
 	}
 	tests := []struct {
 		name            string
@@ -177,13 +183,23 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on ListByID when fetching user",
+			name: "error on missing user ID",
 			args: args{
-				ctx:    context.Background(),
-				userID: id,
+				ctx: context.Background(),
+				user: domain.User{
+					RoleID: technicalUser.RoleID,
+				},
 			},
-			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{}, errors.New("err"))
+			want:    []domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error on missing user Role ID",
+			args: args{
+				ctx: context.Background(),
+				user: domain.User{
+					ID: technicalUser.ID,
+				},
 			},
 			want:    []domain.Task{},
 			wantErr: true,
@@ -191,11 +207,10 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 		{
 			name: "error on ListByID when fetching tasks by manager",
 			args: args{
-				ctx:    context.Background(),
-				userID: id,
+				ctx:  context.Background(),
+				user: managerUser,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 1}, nil)
 				d.retriever.EXPECT().List(context.Background()).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
@@ -204,25 +219,36 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 		{
 			name: "error on ListByID when fetching tasks by technician",
 			args: args{
-				ctx:    context.Background(),
-				userID: id,
+				ctx:  context.Background(),
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 2}, nil)
-				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return([]domain.Task{}, errors.New("err"))
+				d.retriever.EXPECT().ListByUserID(context.Background(), technicalUser.ID).Return([]domain.Task{}, errors.New("err"))
 			},
 			want:    []domain.Task{},
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "happy Manager",
 			args: args{
-				ctx:    context.Background(),
-				userID: id,
+				ctx:  context.Background(),
+				user: managerUser,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: 1, RoleID: 2}, nil)
-				d.retriever.EXPECT().ListByUserID(context.Background(), id).Return(tasks, nil)
+				d.retriever.EXPECT().List(context.Background()).Return(tasks, nil)
+				d.encryptor.EXPECT().Decrypt(tasks[0].Summary).Return(tasks[0].Summary, nil)
+			},
+			want:    tasks,
+			wantErr: false,
+		},
+		{
+			name: "happy Technical",
+			args: args{
+				ctx:  context.Background(),
+				user: technicalUser,
+			},
+			setDependencies: func(d *dependencies) {
+				d.retriever.EXPECT().ListByUserID(context.Background(), technicalUser.ID).Return(tasks, nil)
 				d.encryptor.EXPECT().Decrypt(tasks[0].Summary).Return(tasks[0].Summary, nil)
 			},
 			want:    tasks,
@@ -235,9 +261,8 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 			defer ctrl.Finish()
 
 			d := dependencies{
-				retriever:     domain.NewMockTaskRetriever(ctrl),
-				userRetriever: domain.NewMockUserRetriever(ctrl),
-				encryptor:     domain.NewMockSummaryEncryptor(ctrl),
+				retriever: domain.NewMockTaskRetriever(ctrl),
+				encryptor: domain.NewMockSummaryEncryptor(ctrl),
 			}
 
 			if tt.setDependencies != nil {
@@ -245,14 +270,13 @@ func Test_taskUseCase_ListByUserID(t *testing.T) {
 			}
 
 			u := &taskUseCase{
-				retriever:     d.retriever,
-				userRetriever: d.userRetriever,
-				encryptor:     d.encryptor,
+				retriever: d.retriever,
+				encryptor: d.encryptor,
 			}
 
-			got, err := u.ListByUserID(tt.args.ctx, tt.args.userID)
+			got, err := u.ListByUser(tt.args.ctx, tt.args.user)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ListByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("ListByUser() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 

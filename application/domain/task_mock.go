@@ -49,19 +49,19 @@ func (mr *MockTaskUsecaseMockRecorder) Add(ctx, task interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockTaskUsecase)(nil).Add), ctx, task)
 }
 
-// ListByUserID mocks base method.
-func (m *MockTaskUsecase) ListByUserID(ctx context.Context, userID int) ([]Task, error) {
+// ListByUser mocks base method.
+func (m *MockTaskUsecase) ListByUser(ctx context.Context, user User) ([]Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListByUserID", ctx, userID)
+	ret := m.ctrl.Call(m, "ListByUser", ctx, user)
 	ret0, _ := ret[0].([]Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListByUserID indicates an expected call of ListByUserID.
-func (mr *MockTaskUsecaseMockRecorder) ListByUserID(ctx, userID interface{}) *gomock.Call {
+// ListByUser indicates an expected call of ListByUser.
+func (mr *MockTaskUsecaseMockRecorder) ListByUser(ctx, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUserID", reflect.TypeOf((*MockTaskUsecase)(nil).ListByUserID), ctx, userID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByUser", reflect.TypeOf((*MockTaskUsecase)(nil).ListByUser), ctx, user)
 }
 
 // Remove mocks base method.

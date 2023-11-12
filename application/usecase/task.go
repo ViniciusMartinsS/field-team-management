@@ -59,16 +59,16 @@ func NewTask(
 	}, nil
 }
 
-func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
-	if userID == 0 {
-		return []domain.Task{}, errors.New("UserID must not be 0")
+func (u *taskUseCase) ListByUser(ctx context.Context, user domain.User) ([]domain.Task, error) {
+	if user.ID == 0 {
+		return []domain.Task{}, errors.New("user ID must not be empty")
 	}
 
-	user, err := u.userRetriever.ListByID(ctx, userID)
-	if err != nil {
-		return []domain.Task{}, err
+	if user.RoleID == 0 {
+		return []domain.Task{}, errors.New("user RoleID must not be empty")
 	}
 
+	var err error
 	var tasks []domain.Task
 
 	if user.GetRole() == domain.Manager {
@@ -76,7 +76,7 @@ func (u *taskUseCase) ListByUserID(ctx context.Context, userID int) ([]domain.Ta
 	}
 
 	if user.GetRole() == domain.Technician {
-		tasks, err = u.retriever.ListByUserID(ctx, userID)
+		tasks, err = u.retriever.ListByUserID(ctx, user.ID)
 	}
 
 	if err != nil {
