@@ -105,7 +105,9 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 		return
 	}
 
-	result, err := h.taskUsecase.Add(context.Background(), task)
+	user := identifyUserRequester(c)
+
+	result, err := h.taskUsecase.Add(context.Background(), task, user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "internal server error")
 		return

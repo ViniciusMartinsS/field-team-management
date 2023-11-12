@@ -92,8 +92,22 @@ func (u *taskUseCase) ListByUser(ctx context.Context, user domain.User) ([]domai
 	return decryptedTasks, nil
 }
 
-func (u *taskUseCase) Add(ctx context.Context, task domain.Task) (domain.Task, error) {
-	// LATER VALIDATE USER & TASK.USED_ID
+func (u *taskUseCase) Add(ctx context.Context, task domain.Task, user domain.User) (domain.Task, error) {
+	if task.UserID == 0 {
+		return domain.Task{}, errors.New("UserID must not be 0")
+	}
+
+	if user.ID == 0 {
+		return domain.Task{}, errors.New("user ID must not be empty")
+	}
+
+	if user.RoleID == 0 {
+		return domain.Task{}, errors.New("user RoleID must not be empty")
+	}
+
+	if user.ID != task.UserID {
+		return domain.Task{}, errors.New("forbidden")
+	}
 
 	summaryEncrypted, err := u.encryptor.Encrypt(task.Summary)
 	if err != nil {

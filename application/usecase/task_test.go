@@ -272,13 +272,24 @@ func Test_taskUseCase_Add(t *testing.T) {
 	type args struct {
 		ctx  context.Context
 		task domain.Task
+		user domain.User
 	}
 
-	var task = domain.Task{
-		ID:      1,
-		Summary: "task summary test",
-		UserID:  1,
-	}
+	var (
+		task = domain.Task{
+			ID:      1,
+			Summary: "task summary test",
+			UserID:  2,
+		}
+		technicalUser = domain.User{
+			ID:     2,
+			RoleID: 2,
+		}
+		technicalUser2 = domain.User{
+			ID:     3,
+			RoleID: 2,
+		}
+	)
 
 	tests := []struct {
 		name            string
@@ -288,10 +299,57 @@ func Test_taskUseCase_Add(t *testing.T) {
 		wantErr         bool
 	}{
 		{
+			name: "error invalid task User ID",
+			args: args{
+				ctx: context.Background(),
+				task: domain.Task{
+					Summary: task.Summary,
+				},
+				user: technicalUser,
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error invalid User ID",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+				user: domain.User{
+					RoleID: technicalUser.RoleID,
+				},
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error invalid User Role ID",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+				user: domain.User{
+					ID: technicalUser.ID,
+				},
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error forbidden",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+				user: technicalUser2,
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
 			name: "error on Encrypt",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return("", errors.New("err"))
@@ -304,6 +362,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
@@ -317,6 +376,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
@@ -331,6 +391,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
@@ -360,7 +421,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 				encryptor: d.encryptor,
 			}
 
-			got, err := u.Add(tt.args.ctx, tt.args.task)
+			got, err := u.Add(tt.args.ctx, tt.args.task, tt.args.user)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Add() error = %v, wantErr %v", err, tt.wantErr)
 				return

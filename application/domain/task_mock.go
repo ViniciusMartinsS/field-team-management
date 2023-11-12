@@ -35,18 +35,18 @@ func (m *MockTaskUsecase) EXPECT() *MockTaskUsecaseMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockTaskUsecase) Add(ctx context.Context, task Task) (Task, error) {
+func (m *MockTaskUsecase) Add(ctx context.Context, task Task, user User) (Task, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Add", ctx, task)
+	ret := m.ctrl.Call(m, "Add", ctx, task, user)
 	ret0, _ := ret[0].(Task)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Add indicates an expected call of Add.
-func (mr *MockTaskUsecaseMockRecorder) Add(ctx, task interface{}) *gomock.Call {
+func (mr *MockTaskUsecaseMockRecorder) Add(ctx, task, user interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockTaskUsecase)(nil).Add), ctx, task)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockTaskUsecase)(nil).Add), ctx, task, user)
 }
 
 // ListByUser mocks base method.
