@@ -70,7 +70,10 @@ func main() {
 
 	r := gin.Default()
 
-	taskRouter := api.NewTask(r, authenticator, taskUsecase)
+	taskRouter, err := api.NewTask(r, authenticator, taskUsecase)
+	if err != nil {
+		panic(err)
+	}
 	taskRouter.CreateRouter()
 
 	authRouter := api.NewAuth(r, authUsecase)

@@ -38,13 +38,24 @@ type TaskAPIHandler struct {
 	taskUsecase   domain.TaskUsecase
 }
 
-func NewTask(r *gin.Engine, authenticator domain.Authenticator, taskUsecase domain.TaskUsecase) *TaskAPIHandler {
-	// Todo Request validations & tests
+func NewTask(r *gin.Engine, authenticator domain.Authenticator, taskUsecase domain.TaskUsecase) (*TaskAPIHandler, error) {
+	if r == nil {
+		return &TaskAPIHandler{}, errors.New("router must not be nil")
+	}
+
+	if authenticator == nil {
+		return &TaskAPIHandler{}, errors.New("authenticator must not be nil")
+	}
+
+	if taskUsecase == nil {
+		return &TaskAPIHandler{}, errors.New("taskUsecase must not be nil")
+	}
+
 	return &TaskAPIHandler{
 		router:        r,
 		authenticator: authenticator,
 		taskUsecase:   taskUsecase,
-	}
+	}, nil
 }
 
 func (h *TaskAPIHandler) CreateRouter() {
