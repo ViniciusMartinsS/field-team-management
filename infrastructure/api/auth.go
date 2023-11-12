@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"errors"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -18,11 +19,19 @@ type AuthAPIHandler struct {
 	authUsecase domain.AuthUsecase
 }
 
-func NewAuth(r *gin.Engine, authUsecase domain.AuthUsecase) *AuthAPIHandler {
+func NewAuth(r *gin.Engine, authUsecase domain.AuthUsecase) (*AuthAPIHandler, error) {
+	if r == nil {
+		return &AuthAPIHandler{}, errors.New("router must not be nil")
+	}
+
+	if authUsecase == nil {
+		return &AuthAPIHandler{}, errors.New("authUsecase must not be nil")
+	}
+
 	return &AuthAPIHandler{
 		router:      r,
 		authUsecase: authUsecase,
-	}
+	}, nil
 }
 
 func (h *AuthAPIHandler) CreateRouter() {

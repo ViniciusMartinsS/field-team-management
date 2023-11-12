@@ -76,7 +76,10 @@ func main() {
 	}
 	taskRouter.CreateRouter()
 
-	authRouter := api.NewAuth(r, authUsecase)
+	authRouter, err := api.NewAuth(r, authUsecase)
+	if err != nil {
+		panic(err)
+	}
 	authRouter.CreateRouter()
 
 	err = r.Run()
