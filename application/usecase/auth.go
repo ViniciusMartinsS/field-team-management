@@ -8,11 +8,11 @@ import (
 )
 
 type authUseCase struct {
-	authenticator domain.UserAuthenticator
+	authenticator domain.Authenticator
 	retriever     domain.UserRetriever
 }
 
-func NewAuth(authenticator domain.UserAuthenticator, retriever domain.UserRetriever) (domain.AuthUsecase, error) {
+func NewAuth(authenticator domain.Authenticator, retriever domain.UserRetriever) (domain.AuthUsecase, error) {
 	if retriever == nil {
 		return nil, errors.New("user retriever must not be nil")
 	}

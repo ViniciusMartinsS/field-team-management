@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -46,6 +47,7 @@ func NewTask(r *gin.Engine, taskUsecase domain.TaskUsecase) *TaskAPIHandler {
 func (h *TaskAPIHandler) CreateRouter() {
 	v1 := h.router.Group("v1")
 	tasks := v1.Group("tasks")
+	tasks.Use(Authenticator())
 
 	tasks.GET("", h.get)
 	tasks.POST("", h.post)
@@ -54,6 +56,11 @@ func (h *TaskAPIHandler) CreateRouter() {
 }
 
 func (h *TaskAPIHandler) get(c *gin.Context) {
+	aa := c.MustGet("user_id").(float64)
+	bb := c.MustGet("role_id").(float64)
+
+	fmt.Println(aa, bb)
+
 	// GET USER ID FROM TOKEN
 	result, err := h.taskUsecase.ListByUserID(context.Background(), 2)
 	if err != nil {

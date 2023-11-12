@@ -26,10 +26,6 @@ type UserRetriever interface {
 	ListByEmail(ctx context.Context, email string) (User, error)
 }
 
-type UserAuthenticator interface {
-	GenerateAccessToken(User) (string, error)
-}
-
 func (u *User) GetRole() string {
 	switch u.RoleID {
 	case 1:
