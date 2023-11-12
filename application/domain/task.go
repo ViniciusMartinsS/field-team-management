@@ -40,6 +40,10 @@ type TaskRemover interface {
 	Remove(ctx context.Context, id int64) error
 }
 
+type TaskNotifier interface {
+	SendNotification(ctx context.Context, body string) error
+}
+
 type SummaryEncryptor interface {
 	Encrypt(value string) (string, error)
 	Decrypt(value string) (string, error)

@@ -14,6 +14,7 @@ type taskUseCase struct {
 	updater   domain.TaskUpdater
 	remover   domain.TaskRemover
 	encryptor domain.SummaryEncryptor
+	notifier  domain.TaskNotifier
 }
 
 func NewTask(
@@ -22,6 +23,7 @@ func NewTask(
 	updater domain.TaskUpdater,
 	remover domain.TaskRemover,
 	encryptor domain.SummaryEncryptor,
+	notifier domain.TaskNotifier,
 ) (domain.TaskUsecase, error) {
 	if creator == nil {
 		return &taskUseCase{}, errors.New("task creator must not be nil")
@@ -43,12 +45,17 @@ func NewTask(
 		return &taskUseCase{}, errors.New("encryptor must not be nil")
 	}
 
+	if notifier == nil {
+		return &taskUseCase{}, errors.New("notifier must not be nil")
+	}
+
 	return &taskUseCase{
 		creator:   creator,
 		retriever: retriever,
 		updater:   updater,
 		remover:   remover,
 		encryptor: encryptor,
+		notifier:  notifier,
 	}, nil
 }
 
@@ -149,6 +156,10 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 	var emptyTime *time.Time
 	if task.Date != emptyTime {
 		tsk.Date = task.Date
+
+		go func() {
+			_ = u.notifier.SendNotification(ctx, "Message Goes Here")
+		}()
 	}
 
 	if task.Summary != "" {

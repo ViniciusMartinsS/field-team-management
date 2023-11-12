@@ -11,6 +11,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.16.2
 	github.com/golang/mock v1.6.0
 	github.com/jmoiron/sqlx v1.3.5
+	github.com/rabbitmq/amqp091-go v1.9.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.15.0
 )

@@ -6,6 +6,7 @@ import (
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/api"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/encryption"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/jwt"
+	"github.com/ViniciusMartinss/field-team-management/infrastructure/notifier"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/repository"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,13 +14,28 @@ import (
 )
 
 func main() {
+	queue := "notification"
+
+	rabbitmq := configuration.NewRabbitmq(queue, "amqp://guest:guest@localhost:5672/")
+	brokerConn, err := rabbitmq.Connect()
+	if err != nil {
+		panic(err)
+	}
+	defer brokerConn.Close()
+
+	brokerCh, err := rabbitmq.CreateChannelAndQueue(brokerConn)
+	if err != nil {
+		panic(err)
+	}
+	defer brokerCh.Close()
+
 	database := configuration.NewDatabase(
 		"field",
 		"mysql",
 		"root:root@tcp(localhost:3306)/field?multiStatements=true&parseTime=true",
 	)
 
-	err := database.Connect()
+	err = database.Connect()
 	if err != nil {
 		panic(err)
 	}
@@ -41,6 +57,8 @@ func main() {
 		panic(err)
 	}
 
+	taskNotifier := notifier.NewNotifier(queue, brokerCh)
+
 	encryptor, err := encryption.New("123456789123456789123456")
 	if err != nil {
 		panic(err)
@@ -52,6 +70,7 @@ func main() {
 		taskRepository,
 		taskRepository,
 		encryptor,
+		taskNotifier,
 	)
 	if err != nil {
 		panic(err)
