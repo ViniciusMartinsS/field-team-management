@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
-	"github.com/ViniciusMartinss/field-team-management/infrastructure/encryption"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -19,7 +18,7 @@ func TestNewTask(t *testing.T) {
 	updater := domain.NewMockTaskUpdater(ctrl)
 	remover := domain.NewMockTaskRemover(ctrl)
 	userRetriever := domain.NewMockUserRetriever(ctrl)
-	encryptor, _ := encryption.New("12345678912345678912345") // Change to mock
+	encryptor := domain.NewMockSummaryEncryptor(ctrl)
 
 	type args struct {
 		creator       domain.TaskCreator
@@ -308,6 +307,20 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name: "error on Decrypt",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+			},
+			setDependencies: func(d *dependencies) {
+				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+				d.creator.EXPECT().Add(context.Background(), task).Return(task.ID, nil)
+				d.encryptor.EXPECT().Decrypt(task.Summary).Return("", errors.New("err"))
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
 			name: "happy",
 			args: args{
 				ctx:  context.Background(),
@@ -441,7 +454,22 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "hapy",
+			name: "error on Update",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+			},
+			setDependencies: func(d *dependencies) {
+				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
+				d.encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+				d.updater.EXPECT().Update(context.Background(), task).Return(nil)
+				d.encryptor.EXPECT().Decrypt(task.Summary).Return("", errors.New("err"))
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "happy",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
