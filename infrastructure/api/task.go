@@ -20,7 +20,6 @@ const (
 type taskCreateRequest struct {
 	Summary string `json:"summary" binding:"required,max=2500"`
 	Date    string `json:"date"`
-	UserID  int64  `json:"user_id" binding:"required"`
 }
 
 type taskUpdateRequest struct {
@@ -109,13 +108,13 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 		return
 	}
 
-	task, err := domain.NewTask(request.Summary, parsedDate, request.UserID)
+	user := identifyUserRequester(c)
+
+	task, err := domain.NewTask(request.Summary, parsedDate, user.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
-
-	user := identifyUserRequester(c)
 
 	result, err := h.taskUsecase.Add(context.Background(), task, user)
 	if err != nil {
