@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-type taskResponse struct {
-	ID      int    `json:"id"`
-	Summary string `json:"summary"`
-	Date    string `json:"date"`
-	UserID  int    `json:"user_id"`
-}
-
 type taskCreateRequest struct {
 	Summary string `json:"summary" binding:"required,max=2500"`
 	Date    string `json:"date"`
@@ -27,6 +20,19 @@ type taskCreateRequest struct {
 type taskUpdateRequest struct {
 	Summary string `json:"summary" binding:"max=2500"`
 	Date    string `json:"date"`
+}
+
+type taskResponse struct {
+	ID      int    `json:"id"`
+	Summary string `json:"summary"`
+	Date    string `json:"date"`
+	UserID  int    `json:"user_id"`
+}
+
+type taskHandlerResponse struct {
+	Status bool   `json:"status"`
+	Result any    `json:"result,omitempty"`
+	Error  string `json:"error,omitempty"`
 }
 
 type TaskAPIHandler struct {
@@ -72,15 +78,15 @@ func (h *TaskAPIHandler) get(c *gin.Context) {
 	result, err := h.taskUsecase.ListByUser(context.Background(), user)
 	if err != nil {
 		if errors.Is(err, domain.ErrTasksNotFound) {
-			c.JSON(http.StatusBadRequest, "task not found")
+			c.JSON(http.StatusBadRequest, toResponse(false, err.Error()))
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, "internal server error")
+		c.JSON(http.StatusInternalServerError, toResponse(false, "internal server error"))
 		return
 	}
 
-	c.JSON(http.StatusOK, toResponseSlice(result))
+	c.JSON(http.StatusOK, toResponse(true, formatResponseSlice(result)))
 }
 
 func (h *TaskAPIHandler) post(c *gin.Context) {
@@ -111,7 +117,7 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, toResponseSingle(result))
+	c.JSON(http.StatusOK, formatResponseSingle(result))
 }
 
 func (h *TaskAPIHandler) patch(c *gin.Context) {
@@ -153,7 +159,7 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, toResponseSingle(result))
+	c.JSON(http.StatusOK, formatResponseSingle(result))
 }
 
 func (h *TaskAPIHandler) remove(c *gin.Context) {
@@ -180,7 +186,24 @@ func identifyUserRequester(c *gin.Context) domain.User {
 	}
 }
 
-func toResponseSingle(task domain.Task) taskResponse {
+func toResponse(status bool, result any) taskHandlerResponse {
+	switch status {
+	case true:
+		return taskHandlerResponse{
+			Status: status,
+			Result: result,
+		}
+	case false:
+		return taskHandlerResponse{
+			Status: false,
+			Error:  result.(string),
+		}
+	}
+
+	return taskHandlerResponse{}
+}
+
+func formatResponseSingle(task domain.Task) taskResponse {
 	var date string
 
 	if task.Date != nil {
@@ -195,11 +218,11 @@ func toResponseSingle(task domain.Task) taskResponse {
 	}
 }
 
-func toResponseSlice(task []domain.Task) []taskResponse {
+func formatResponseSlice(task []domain.Task) []taskResponse {
 	var response []taskResponse
 
 	for _, t := range task {
-		response = append(response, toResponseSingle(t))
+		response = append(response, formatResponseSingle(t))
 	}
 
 	return response
