@@ -7,12 +7,14 @@ import (
 	"strings"
 )
 
+const unauthorizedMessage = "unauthorized"
+
 func Authenticator(authenticator domain.Authenticator) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
 
 		if len(token) == 0 {
-			c.JSON(http.StatusUnauthorized, "")
+			c.JSON(http.StatusUnauthorized, toResponse(false, unauthorizedMessage))
 			c.Abort()
 			return
 		}
@@ -23,7 +25,7 @@ func Authenticator(authenticator domain.Authenticator) gin.HandlerFunc {
 
 		valid, claims, err := authenticator.IsAccessTokenValid(token)
 		if !valid || err != nil {
-			c.JSON(http.StatusUnauthorized, "")
+			c.JSON(http.StatusUnauthorized, toResponse(false, unauthorizedMessage))
 			c.Abort()
 			return
 		}
