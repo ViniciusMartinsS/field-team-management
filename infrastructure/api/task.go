@@ -69,15 +69,9 @@ func (h *TaskAPIHandler) CreateRouter() {
 }
 
 func (h *TaskAPIHandler) get(c *gin.Context) {
-	userID := c.MustGet("user_id").(float64)
-	roleID := c.MustGet("role_id").(float64)
+	user := identifyUserRequester(c)
 
-	result, err := h.taskUsecase.ListByUser(
-		context.Background(),
-		domain.User{
-			ID:     int(userID),
-			RoleID: int(roleID)},
-	)
+	result, err := h.taskUsecase.ListByUser(context.Background(), user)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) {
 			c.JSON(http.StatusBadRequest, "user not found")
@@ -161,17 +155,27 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 }
 
 func (h *TaskAPIHandler) remove(c *gin.Context) {
-	// GET USER ID FROM TOKEN
-
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, "invalid id")
 		return
 	}
 
-	err = h.taskUsecase.Remove(context.Background(), id, 1)
+	user := identifyUserRequester(c)
+
+	err = h.taskUsecase.Remove(context.Background(), id, user)
 
 	c.JSON(http.StatusNoContent, err)
+}
+
+func identifyUserRequester(c *gin.Context) domain.User {
+	userID := c.MustGet("user_id").(float64)
+	roleID := c.MustGet("role_id").(float64)
+
+	return domain.User{
+		ID:     int(userID),
+		RoleID: int(roleID),
+	}
 }
 
 func toResponseSingle(task domain.Task) taskResponse {

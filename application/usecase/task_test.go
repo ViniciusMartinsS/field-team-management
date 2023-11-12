@@ -17,16 +17,14 @@ func TestNewTask(t *testing.T) {
 	retriever := domain.NewMockTaskRetriever(ctrl)
 	updater := domain.NewMockTaskUpdater(ctrl)
 	remover := domain.NewMockTaskRemover(ctrl)
-	userRetriever := domain.NewMockUserRetriever(ctrl)
 	encryptor := domain.NewMockSummaryEncryptor(ctrl)
 
 	type args struct {
-		creator       domain.TaskCreator
-		retriever     domain.TaskRetriever
-		updater       domain.TaskUpdater
-		remover       domain.TaskRemover
-		userRetriever domain.UserRetriever
-		encryptor     domain.SummaryEncryptor
+		creator   domain.TaskCreator
+		retriever domain.TaskRetriever
+		updater   domain.TaskUpdater
+		remover   domain.TaskRemover
+		encryptor domain.SummaryEncryptor
 	}
 
 	tests := []struct {
@@ -38,12 +36,11 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil creator",
 			args: args{
-				creator:       nil,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
+				creator:   nil,
+				retriever: retriever,
+				updater:   updater,
+				remover:   remover,
+				encryptor: encryptor,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -51,25 +48,11 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil retriever",
 			args: args{
-				creator:       creator,
-				retriever:     nil,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
-			},
-			want:    &taskUseCase{},
-			wantErr: true,
-		},
-		{
-			name: "error - nil user retriever",
-			args: args{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: nil,
-				encryptor:     encryptor,
+				creator:   creator,
+				retriever: nil,
+				updater:   updater,
+				remover:   remover,
+				encryptor: encryptor,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -77,12 +60,11 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil user updater",
 			args: args{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       nil,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
+				creator:   creator,
+				retriever: retriever,
+				updater:   nil,
+				remover:   remover,
+				encryptor: encryptor,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -90,12 +72,11 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil user remover",
 			args: args{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       nil,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
+				creator:   creator,
+				retriever: retriever,
+				updater:   updater,
+				remover:   nil,
+				encryptor: encryptor,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -103,12 +84,11 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "error - nil user encryptor",
 			args: args{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     nil,
+				creator:   creator,
+				retriever: retriever,
+				updater:   updater,
+				remover:   remover,
+				encryptor: nil,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -116,27 +96,25 @@ func TestNewTask(t *testing.T) {
 		{
 			name: "happy",
 			args: args{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
+				creator:   creator,
+				retriever: retriever,
+				updater:   updater,
+				remover:   remover,
+				encryptor: encryptor,
 			},
 			want: &taskUseCase{
-				creator:       creator,
-				retriever:     retriever,
-				updater:       updater,
-				remover:       remover,
-				userRetriever: userRetriever,
-				encryptor:     encryptor,
+				creator:   creator,
+				retriever: retriever,
+				updater:   updater,
+				remover:   remover,
+				encryptor: encryptor,
 			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.remover, tt.args.userRetriever, tt.args.encryptor)
+			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.remover, tt.args.encryptor)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewTask() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -546,17 +524,26 @@ func Test_taskUseCase_Update(t *testing.T) {
 
 func Test_taskUseCase_Remove(t *testing.T) {
 	type dependencies struct {
-		userRetriever *domain.MockUserRetriever
-		remover       *domain.MockTaskRemover
+		remover *domain.MockTaskRemover
 	}
 
 	type args struct {
-		ctx    context.Context
-		id     int
-		userID int
+		ctx  context.Context
+		id   int
+		user domain.User
 	}
 
-	const id = 1
+	var (
+		id          = 1
+		managerUser = domain.User{
+			ID:     1,
+			RoleID: 1,
+		}
+		technicalUser = domain.User{
+			ID:     2,
+			RoleID: 2,
+		}
+	)
 
 	tests := []struct {
 		name            string
@@ -567,8 +554,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 		{
 			name: "error on Remove without ID",
 			args: args{
-				ctx:    context.Background(),
-				userID: 1,
+				ctx: context.Background(),
 			},
 			wantErr: true,
 		},
@@ -577,42 +563,40 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				id:  id,
+				user: domain.User{
+					RoleID: managerUser.RoleID,
+				},
 			},
 			wantErr: true,
 		},
 		{
-			name: "error on ListByID",
+			name: "error on Remove without RoleID",
 			args: args{
-				ctx:    context.Background(),
-				id:     id,
-				userID: id,
-			},
-			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{}, errors.New("err"))
+				ctx: context.Background(),
+				id:  id,
+				user: domain.User{
+					ID: managerUser.ID,
+				},
 			},
 			wantErr: true,
 		},
 		{
 			name: "error user forbidden",
 			args: args{
-				ctx:    context.Background(),
-				id:     id,
-				userID: id,
-			},
-			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: id, RoleID: 2}, nil)
+				ctx:  context.Background(),
+				id:   id,
+				user: technicalUser,
 			},
 			wantErr: true,
 		},
 		{
 			name: "happy",
 			args: args{
-				ctx:    context.Background(),
-				id:     id,
-				userID: id,
+				ctx:  context.Background(),
+				id:   id,
+				user: managerUser,
 			},
 			setDependencies: func(d *dependencies) {
-				d.userRetriever.EXPECT().ListByID(context.Background(), id).Return(domain.User{ID: id, RoleID: 1}, nil)
 				d.remover.EXPECT().Remove(context.Background(), id).Return(nil)
 			},
 			wantErr: false,
@@ -624,8 +608,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			defer ctrl.Finish()
 
 			d := dependencies{
-				userRetriever: domain.NewMockUserRetriever(ctrl),
-				remover:       domain.NewMockTaskRemover(ctrl),
+				remover: domain.NewMockTaskRemover(ctrl),
 			}
 
 			if tt.setDependencies != nil {
@@ -633,11 +616,10 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			}
 
 			u := &taskUseCase{
-				userRetriever: d.userRetriever,
-				remover:       d.remover,
+				remover: d.remover,
 			}
 
-			err := u.Remove(tt.args.ctx, tt.args.id, tt.args.userID)
+			err := u.Remove(tt.args.ctx, tt.args.id, tt.args.user)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Remove() error = %v, wantErr %v", err, tt.wantErr)
 				return

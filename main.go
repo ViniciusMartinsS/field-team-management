@@ -51,7 +51,6 @@ func main() {
 		taskRepository,
 		taskRepository,
 		taskRepository,
-		userRepository,
 		encryptor,
 	)
 	if err != nil {

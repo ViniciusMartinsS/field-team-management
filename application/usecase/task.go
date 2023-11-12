@@ -9,12 +9,11 @@ import (
 )
 
 type taskUseCase struct {
-	creator       domain.TaskCreator
-	retriever     domain.TaskRetriever
-	updater       domain.TaskUpdater
-	remover       domain.TaskRemover
-	userRetriever domain.UserRetriever
-	encryptor     domain.SummaryEncryptor
+	creator   domain.TaskCreator
+	retriever domain.TaskRetriever
+	updater   domain.TaskUpdater
+	remover   domain.TaskRemover
+	encryptor domain.SummaryEncryptor
 }
 
 func NewTask(
@@ -22,7 +21,6 @@ func NewTask(
 	retriever domain.TaskRetriever,
 	updater domain.TaskUpdater,
 	remover domain.TaskRemover,
-	userRetriever domain.UserRetriever,
 	encryptor domain.SummaryEncryptor,
 ) (domain.TaskUsecase, error) {
 	if creator == nil {
@@ -41,10 +39,6 @@ func NewTask(
 		return &taskUseCase{}, errors.New("task remover must not be nil")
 	}
 
-	if userRetriever == nil {
-		return &taskUseCase{}, errors.New("user retriever must not be nil")
-	}
-
 	if encryptor == nil {
 		return &taskUseCase{}, errors.New("encryptor must not be nil")
 	}
@@ -54,7 +48,6 @@ func NewTask(
 		retriever,
 		updater,
 		remover,
-		userRetriever,
 		encryptor,
 	}, nil
 }
@@ -168,18 +161,17 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task
 	return tsk, nil
 }
 
-func (u *taskUseCase) Remove(ctx context.Context, id, userID int) error {
+func (u *taskUseCase) Remove(ctx context.Context, id int, user domain.User) error {
 	if id == 0 {
 		return errors.New("ID must not be 0")
 	}
 
-	if userID == 0 {
-		return errors.New("UserID must not be 0")
+	if user.ID == 0 {
+		return errors.New("user ID must not be empty")
 	}
 
-	user, err := u.userRetriever.ListByID(ctx, userID)
-	if err != nil {
-		return err
+	if user.RoleID == 0 {
+		return errors.New("user RoleID must not be empty")
 	}
 
 	if user.GetRole() == domain.Technician {
