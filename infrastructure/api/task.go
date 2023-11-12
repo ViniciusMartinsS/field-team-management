@@ -134,20 +134,20 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 func (h *TaskAPIHandler) patch(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid id")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	var request taskUpdateRequest
 
 	if err := c.ShouldBindWith(&request, binding.JSON); err != nil {
-		c.JSON(http.StatusBadRequest, "required fields were not sent or with invalid content")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
 	parsedDate, err := parseDate(request.Date)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, "invalid date format")
+		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
 	}
 
@@ -162,15 +162,15 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 	result, err := h.taskUsecase.Update(context.Background(), task, user)
 	if err != nil {
 		if errors.Is(err, domain.ErrTasksNotFound) {
-			c.JSON(http.StatusBadRequest, "task not found")
+			c.JSON(http.StatusBadRequest, toResponse(false, err.Error()))
 			return
 		}
 
-		c.JSON(http.StatusInternalServerError, "internal server error")
+		c.JSON(http.StatusInternalServerError, toResponse(false, internalServerMessage))
 		return
 	}
 
-	c.JSON(http.StatusOK, formatResponseSingle(result))
+	c.JSON(http.StatusOK, toResponse(true, formatResponseSingle(result)))
 }
 
 func (h *TaskAPIHandler) remove(c *gin.Context) {
