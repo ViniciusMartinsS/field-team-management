@@ -13,8 +13,12 @@ type authUseCase struct {
 }
 
 func NewAuth(authenticator domain.Authenticator, retriever domain.UserRetriever) (domain.AuthUsecase, error) {
+	if authenticator == nil {
+		return &authUseCase{}, errors.New("authenticator must not be nil")
+	}
+
 	if retriever == nil {
-		return nil, errors.New("user retriever must not be nil")
+		return &authUseCase{}, errors.New("retriever must not be nil")
 	}
 
 	return &authUseCase{

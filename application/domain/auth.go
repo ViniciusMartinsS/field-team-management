@@ -1,3 +1,5 @@
+//go:generate mockgen -source=auth.go -destination=auth_mock.go -package=domain
+
 package domain
 
 import "context"
