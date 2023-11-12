@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -13,7 +12,7 @@ type authenticator struct {
 
 func New(key string) (domain.Authenticator, error) {
 	if key == "" {
-		return nil, errors.New("key must not be empty")
+		return &authenticator{}, errors.New("key must not be empty")
 	}
 
 	return &authenticator{key: key}, nil
@@ -22,9 +21,9 @@ func New(key string) (domain.Authenticator, error) {
 func (a *authenticator) GenerateAccessToken(user domain.User) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
-			"user_id": fmt.Sprintf("%d", user.ID),
+			"user_id": user.ID,
 			"email":   user.Email,
-			"role_id": fmt.Sprintf("%d", user.RoleID),
+			"role_id": user.RoleID,
 		},
 	)
 
