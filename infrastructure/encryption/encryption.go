@@ -6,8 +6,6 @@ import (
 	"github.com/firdasafridi/gocrypt"
 )
 
-var errInternalServerError = errors.New("internal server error")
-
 type encryptor struct {
 	des *gocrypt.DESOpt
 }
@@ -28,7 +26,7 @@ func New(key string) (domain.SummaryEncryptor, error) {
 func (e *encryptor) Encrypt(value string) (string, error) {
 	cipherText, err := e.des.Encrypt([]byte(value))
 	if err != nil {
-		return "", errInternalServerError
+		return "", err
 	}
 
 	return cipherText, nil
@@ -37,7 +35,7 @@ func (e *encryptor) Encrypt(value string) (string, error) {
 func (e *encryptor) Decrypt(value string) (string, error) {
 	plainText, err := e.des.Decrypt([]byte(value))
 	if err != nil {
-		return "", errInternalServerError
+		return "", err
 	}
 
 	return plainText, nil
