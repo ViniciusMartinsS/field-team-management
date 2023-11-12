@@ -20,19 +20,19 @@ func NewTask(db *sqlx.DB) (*TaskRepository, error) {
 	return &TaskRepository{db}, nil
 }
 
-func (r *TaskRepository) Add(ctx context.Context, task domain.Task) (int, error) {
+func (r *TaskRepository) Add(ctx context.Context, task domain.Task) (int64, error) {
 	var id int64
 
 	record, err := r.db.ExecContext(ctx, `INSERT INTO tasks (summary, date, user_id) VALUES (?, ?, ?)`, task.Summary, task.Date, task.UserID)
 	if err != nil {
-		return int(id), err
+		return id, err
 	}
 
 	if id, err = record.LastInsertId(); err != nil {
-		return int(id), err
+		return id, err
 	}
 
-	return int(id), nil
+	return id, nil
 }
 
 func (r *TaskRepository) List(ctx context.Context) ([]domain.Task, error) {
@@ -53,7 +53,7 @@ func (r *TaskRepository) List(ctx context.Context) ([]domain.Task, error) {
 	return result, nil
 }
 
-func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, id, userID int) (domain.Task, error) {
+func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, id, userID int64) (domain.Task, error) {
 	var result domain.Task
 
 	err := r.db.QueryRowContext(ctx, `SELECT id, summary, date, user_id FROM tasks WHERE id=? AND user_id=? AND deleted=FALSE`, id, userID).
@@ -70,7 +70,7 @@ func (r *TaskRepository) ListByIDAndUserID(ctx context.Context, id, userID int) 
 	return result, nil
 }
 
-func (r *TaskRepository) ListByUserID(ctx context.Context, userID int) ([]domain.Task, error) {
+func (r *TaskRepository) ListByUserID(ctx context.Context, userID int64) ([]domain.Task, error) {
 	rows, err := r.db.QueryContext(ctx, `SELECT id, summary, date, user_id FROM tasks WHERE user_id=? AND deleted=FALSE`, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -101,7 +101,7 @@ func (r *TaskRepository) Update(ctx context.Context, task domain.Task) error {
 	return nil
 }
 
-func (r *TaskRepository) Remove(ctx context.Context, id int) error {
+func (r *TaskRepository) Remove(ctx context.Context, id int64) error {
 	if _, err := r.db.ExecContext(ctx, `UPDATE tasks SET deleted=TRUE WHERE id=?`, id); err != nil {
 		return err
 	}

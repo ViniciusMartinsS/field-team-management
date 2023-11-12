@@ -13,7 +13,7 @@ func TestNewTask(t *testing.T) {
 	type args struct {
 		summary string
 		date    *time.Time
-		userID  int
+		userID  int64
 	}
 
 	currentTime := time.Now()

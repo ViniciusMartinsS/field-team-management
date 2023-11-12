@@ -175,7 +175,7 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 	return tsk, nil
 }
 
-func (u *taskUseCase) Remove(ctx context.Context, id int, user domain.User) error {
+func (u *taskUseCase) Remove(ctx context.Context, id int64, user domain.User) error {
 	if id == 0 {
 		return errors.New("ID must not be 0")
 	}

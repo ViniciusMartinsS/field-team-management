@@ -20,7 +20,7 @@ const (
 type taskCreateRequest struct {
 	Summary string `json:"summary" binding:"required,max=2500"`
 	Date    string `json:"date"`
-	UserID  int    `json:"user_id" binding:"required"`
+	UserID  int64  `json:"user_id" binding:"required"`
 }
 
 type taskUpdateRequest struct {
@@ -29,10 +29,10 @@ type taskUpdateRequest struct {
 }
 
 type taskResponse struct {
-	ID      int    `json:"id"`
+	ID      int64  `json:"id"`
 	Summary string `json:"summary"`
 	Date    string `json:"date"`
-	UserID  int    `json:"user_id"`
+	UserID  int64  `json:"user_id"`
 }
 
 type taskHandlerResponse struct {
@@ -132,7 +132,7 @@ func (h *TaskAPIHandler) post(c *gin.Context) {
 }
 
 func (h *TaskAPIHandler) patch(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
@@ -174,7 +174,7 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 }
 
 func (h *TaskAPIHandler) remove(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, toResponse(false, badRequestMessage))
 		return
@@ -201,8 +201,8 @@ func identifyUserRequester(c *gin.Context) domain.User {
 	roleID := c.MustGet("role_id").(float64)
 
 	return domain.User{
-		ID:     int(userID),
-		RoleID: int(roleID),
+		ID:     int64(userID),
+		RoleID: int64(roleID),
 	}
 }
 

@@ -19,10 +19,10 @@ const (
 )
 
 type User struct {
-	ID       int
+	ID       int64
 	Email    string
 	Password string
-	RoleID   int
+	RoleID   int64
 }
 
 type UserRetriever interface {

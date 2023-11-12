@@ -65,7 +65,7 @@ func (mr *MockTaskUsecaseMockRecorder) ListByUser(ctx, user interface{}) *gomock
 }
 
 // Remove mocks base method.
-func (m *MockTaskUsecase) Remove(ctx context.Context, id int, user User) error {
+func (m *MockTaskUsecase) Remove(ctx context.Context, id int64, user User) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Remove", ctx, id, user)
 	ret0, _ := ret[0].(error)
@@ -117,10 +117,10 @@ func (m *MockTaskCreator) EXPECT() *MockTaskCreatorMockRecorder {
 }
 
 // Add mocks base method.
-func (m *MockTaskCreator) Add(ctx context.Context, task Task) (int, error) {
+func (m *MockTaskCreator) Add(ctx context.Context, task Task) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", ctx, task)
-	ret0, _ := ret[0].(int)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -170,7 +170,7 @@ func (mr *MockTaskRetrieverMockRecorder) List(ctx interface{}) *gomock.Call {
 }
 
 // ListByIDAndUserID mocks base method.
-func (m *MockTaskRetriever) ListByIDAndUserID(ctx context.Context, id, userID int) (Task, error) {
+func (m *MockTaskRetriever) ListByIDAndUserID(ctx context.Context, id, userID int64) (Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListByIDAndUserID", ctx, id, userID)
 	ret0, _ := ret[0].(Task)
@@ -185,7 +185,7 @@ func (mr *MockTaskRetrieverMockRecorder) ListByIDAndUserID(ctx, id, userID inter
 }
 
 // ListByUserID mocks base method.
-func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int) ([]Task, error) {
+func (m *MockTaskRetriever) ListByUserID(ctx context.Context, userID int64) ([]Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListByUserID", ctx, userID)
 	ret0, _ := ret[0].([]Task)
@@ -260,7 +260,7 @@ func (m *MockTaskRemover) EXPECT() *MockTaskRemoverMockRecorder {
 }
 
 // Remove mocks base method.
-func (m *MockTaskRemover) Remove(ctx context.Context, id int) error {
+func (m *MockTaskRemover) Remove(ctx context.Context, id int64) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Remove", ctx, id)
 	ret0, _ := ret[0].(error)

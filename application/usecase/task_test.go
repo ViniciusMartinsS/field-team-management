@@ -606,12 +606,12 @@ func Test_taskUseCase_Remove(t *testing.T) {
 
 	type args struct {
 		ctx  context.Context
-		id   int
+		id   int64
 		user domain.User
 	}
 
 	var (
-		id          = 1
+		id          = int64(1)
 		managerUser = domain.User{
 			ID:     1,
 			RoleID: 1,

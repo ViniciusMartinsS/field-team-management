@@ -19,17 +19,17 @@ type TaskUsecase interface {
 	Add(ctx context.Context, task Task, user User) (Task, error)
 	ListByUser(ctx context.Context, user User) ([]Task, error)
 	Update(ctx context.Context, task Task, user User) (Task, error)
-	Remove(ctx context.Context, id int, user User) error
+	Remove(ctx context.Context, id int64, user User) error
 }
 
 type TaskCreator interface {
-	Add(ctx context.Context, task Task) (int, error)
+	Add(ctx context.Context, task Task) (int64, error)
 }
 
 type TaskRetriever interface {
 	List(ctx context.Context) ([]Task, error)
-	ListByIDAndUserID(ctx context.Context, id, userID int) (Task, error)
-	ListByUserID(ctx context.Context, userID int) ([]Task, error)
+	ListByIDAndUserID(ctx context.Context, id, userID int64) (Task, error)
+	ListByUserID(ctx context.Context, userID int64) ([]Task, error)
 }
 
 type TaskUpdater interface {
@@ -37,7 +37,7 @@ type TaskUpdater interface {
 }
 
 type TaskRemover interface {
-	Remove(ctx context.Context, id int) error
+	Remove(ctx context.Context, id int64) error
 }
 
 type SummaryEncryptor interface {
@@ -46,13 +46,13 @@ type SummaryEncryptor interface {
 }
 
 type Task struct {
-	ID      int
+	ID      int64
 	Summary string
 	Date    *time.Time
-	UserID  int
+	UserID  int64
 }
 
-func NewTask(summary string, date *time.Time, userID int) (Task, error) {
+func NewTask(summary string, date *time.Time, userID int64) (Task, error) {
 	var err []string
 
 	if summary == "" {
