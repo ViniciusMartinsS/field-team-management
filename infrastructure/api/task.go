@@ -19,14 +19,14 @@ type taskResponse struct {
 }
 
 type taskCreateRequest struct {
-	Summary string `json:"summary" binding:"required"`
+	Summary string `json:"summary" binding:"required,max=2500"`
 	Date    string `json:"date"`
 	UserID  int    `json:"user_id" binding:"required"`
 }
 
 type taskUpdateRequest struct {
 	ID      int    `json:"id" binding:"required"`
-	Summary string `json:"summary"`
+	Summary string `json:"summary" binding:"max=2500"`
 	Date    string `json:"date"`
 	UserID  int    `json:"user_id" binding:"required"`
 }

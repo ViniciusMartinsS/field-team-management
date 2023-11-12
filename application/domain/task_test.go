@@ -4,6 +4,7 @@ package domain
 
 import (
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 	"time"
 )
@@ -32,6 +33,16 @@ func TestNewTask(t *testing.T) {
 			name: "error when empty summary",
 			args: args{
 				summary: "",
+				date:    &currentTime,
+				userID:  userID,
+			},
+			want:    Task{},
+			wantErr: true,
+		},
+		{
+			name: "error when summary is too big",
+			args: args{
+				summary: strings.Repeat("a", 2600),
 				date:    &currentTime,
 				userID:  userID,
 			},

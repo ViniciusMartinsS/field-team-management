@@ -59,6 +59,10 @@ func NewTask(summary string, date *time.Time, userID int) (Task, error) {
 		err = append(err, "summary must not be empty")
 	}
 
+	if len(summary) > 2500 {
+		err = append(err, "summary size is too big")
+	}
+
 	if userID == 0 {
 		err = append(err, "user ID must not be 0")
 	}
