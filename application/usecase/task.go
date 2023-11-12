@@ -132,13 +132,25 @@ func (u *taskUseCase) Add(ctx context.Context, task domain.Task, user domain.Use
 	return task, nil
 }
 
-func (u *taskUseCase) Update(ctx context.Context, task domain.Task) (domain.Task, error) {
+func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.User) (domain.Task, error) {
 	if task.ID == 0 {
 		return domain.Task{}, errors.New("ID must not be 0")
 	}
 
 	if task.UserID == 0 {
 		return domain.Task{}, errors.New("UserID must not be 0")
+	}
+
+	if user.ID == 0 {
+		return domain.Task{}, errors.New("user ID must not be empty")
+	}
+
+	if user.RoleID == 0 {
+		return domain.Task{}, errors.New("user RoleID must not be empty")
+	}
+
+	if user.ID != task.UserID {
+		return domain.Task{}, errors.New("forbidden")
 	}
 
 	tsk, err := u.retriever.ListByIDAndUserID(ctx, task.ID, task.UserID)

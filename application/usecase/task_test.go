@@ -9,6 +9,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"time"
 )
 
 func TestNewTask(t *testing.T) {
@@ -442,13 +443,26 @@ func Test_taskUseCase_Update(t *testing.T) {
 	type args struct {
 		ctx  context.Context
 		task domain.Task
+		user domain.User
 	}
 
-	var task = domain.Task{
-		ID:      1,
-		Summary: "task summary test",
-		UserID:  1,
-	}
+	var (
+		currentTime = time.Now()
+		task        = domain.Task{
+			ID:      1,
+			Summary: "task summary test",
+			Date:    &currentTime,
+			UserID:  1,
+		}
+		technicalUser = domain.User{
+			ID:     1,
+			RoleID: 2,
+		}
+		technicalUser2 = domain.User{
+			ID:     2,
+			RoleID: 2,
+		}
+	)
 
 	tests := []struct {
 		name            string
@@ -465,6 +479,20 @@ func Test_taskUseCase_Update(t *testing.T) {
 					Summary: task.Summary,
 					UserID:  task.UserID,
 				},
+				user: technicalUser,
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error on Update without Task User ID",
+			args: args{
+				ctx: context.Background(),
+				task: domain.Task{
+					ID:      task.ID,
+					Summary: task.Summary,
+				},
+				user: technicalUser,
 			},
 			want:    domain.Task{},
 			wantErr: true,
@@ -472,11 +500,33 @@ func Test_taskUseCase_Update(t *testing.T) {
 		{
 			name: "error on Update without User ID",
 			args: args{
-				ctx: context.Background(),
-				task: domain.Task{
-					ID:      task.ID,
-					Summary: task.Summary,
+				ctx:  context.Background(),
+				task: task,
+				user: domain.User{
+					RoleID: technicalUser.RoleID,
 				},
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error on Update without User Role ID",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+				user: domain.User{
+					ID: technicalUser.ID,
+				},
+			},
+			want:    domain.Task{},
+			wantErr: true,
+		},
+		{
+			name: "error forbidden",
+			args: args{
+				ctx:  context.Background(),
+				task: task,
+				user: technicalUser2,
 			},
 			want:    domain.Task{},
 			wantErr: true,
@@ -486,6 +536,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(domain.Task{}, errors.New("err"))
@@ -498,6 +549,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
@@ -511,6 +563,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
@@ -525,6 +578,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
@@ -540,6 +594,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			args: args{
 				ctx:  context.Background(),
 				task: task,
+				user: technicalUser,
 			},
 			setDependencies: func(d *dependencies) {
 				d.retriever.EXPECT().ListByIDAndUserID(context.Background(), task.ID, task.UserID).Return(task, nil)
@@ -572,7 +627,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 				encryptor: d.encryptor,
 			}
 
-			got, err := u.Update(tt.args.ctx, tt.args.task)
+			got, err := u.Update(tt.args.ctx, tt.args.task, tt.args.user)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Update() error = %v, wantErr %v", err, tt.wantErr)
 				return

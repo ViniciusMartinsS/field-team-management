@@ -137,7 +137,9 @@ func (h *TaskAPIHandler) patch(c *gin.Context) {
 		UserID:  request.UserID,
 	}
 
-	result, err := h.taskUsecase.Update(context.Background(), task)
+	user := identifyUserRequester(c)
+
+	result, err := h.taskUsecase.Update(context.Background(), task, user)
 	if err != nil {
 		if errors.Is(err, domain.ErrTasksNotFound) {
 			c.JSON(http.StatusBadRequest, "task not found")
