@@ -14,3 +14,9 @@ tests:
 
 coverage:
 	go tool cover -html=coverage.out -o coverage.html
+
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down

@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3006:3006"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: field
+    healthcheck:
+      test: mysqladmin ping -h 127.0.0.1 -u root --password=$$MYSQL_ROOT_PASSWORD
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  field-team-management:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      QUEUE: notification
+      QUEUE_CONN_STRING: amqp://guest:guest@rabbitmq:5672/
+      DATABASE: field
+      DATABASE_CONN_STRING: root:root@tcp(mysql:3306)/field?multiStatements=true&parseTime=true
+      ENCRYPTION_KEY: "123456789123456789123456"
+      JWT_KEY: my_secret_key
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
