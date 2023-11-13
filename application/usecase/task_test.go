@@ -8,7 +8,9 @@ import (
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"sync"
 	"testing"
+	"time"
 )
 
 func TestNewTask(t *testing.T) {
@@ -454,6 +456,54 @@ func Test_taskUseCase_Add(t *testing.T) {
 	}
 }
 
+func Test_taskUseCase_Add_Notify_Concurrent(t *testing.T) {
+	var (
+		ctx  = context.Background()
+		date = time.Now()
+		task = domain.Task{
+			ID:      1,
+			Summary: "task summary test",
+			Date:    &date,
+			UserID:  2,
+		}
+		user = domain.User{
+			ID:     2,
+			RoleID: 2,
+		}
+	)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	encryptor := domain.NewMockSummaryEncryptor(ctrl)
+	encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+	encryptor.EXPECT().Decrypt(task.Summary).Return(task.Summary, nil)
+
+	creator := domain.NewMockTaskCreator(ctrl)
+	creator.EXPECT().Add(ctx, task).Return(task.ID, nil)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	notifier := domain.NewMockTaskNotifier(ctrl)
+	notifier.EXPECT().SendNotification(ctx, gomock.Any()).
+		Do(func(arg0, arg1 interface{}) interface{} {
+			defer wg.Done()
+			return nil
+		})
+
+	u := &taskUseCase{
+		creator:   creator,
+		encryptor: encryptor,
+		notifier:  notifier,
+	}
+	got, err := u.Add(ctx, task, user)
+
+	wg.Wait()
+	assert.Equal(t, nil, err)
+	assert.Equal(t, task, got)
+}
+
 func Test_taskUseCase_Update(t *testing.T) {
 	type dependencies struct {
 		retriever *domain.MockTaskRetriever
@@ -616,6 +666,58 @@ func Test_taskUseCase_Update(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_taskUseCase_Update_Notify_Concurrent(t *testing.T) {
+	var (
+		ctx  = context.Background()
+		date = time.Now()
+		task = domain.Task{
+			ID:      1,
+			Summary: "task summary test",
+			Date:    &date,
+			UserID:  2,
+		}
+		user = domain.User{
+			ID:     2,
+			RoleID: 2,
+		}
+	)
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	encryptor := domain.NewMockSummaryEncryptor(ctrl)
+	encryptor.EXPECT().Encrypt(task.Summary).Return(task.Summary, nil)
+	encryptor.EXPECT().Decrypt(task.Summary).Return(task.Summary, nil)
+
+	updater := domain.NewMockTaskUpdater(ctrl)
+	updater.EXPECT().Update(ctx, task).Return(nil)
+
+	retriever := domain.NewMockTaskRetriever(ctrl)
+	retriever.EXPECT().ListByIDAndUserID(ctx, task.ID, task.UserID).Return(task, nil)
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+
+	notifier := domain.NewMockTaskNotifier(ctrl)
+	notifier.EXPECT().SendNotification(ctx, gomock.Any()).
+		Do(func(arg0, arg1 interface{}) interface{} {
+			defer wg.Done()
+			return nil
+		})
+
+	u := &taskUseCase{
+		retriever: retriever,
+		updater:   updater,
+		encryptor: encryptor,
+		notifier:  notifier,
+	}
+	got, err := u.Update(ctx, task, user)
+
+	wg.Wait()
+	assert.Equal(t, nil, err)
+	assert.Equal(t, task, got)
 }
 
 func Test_taskUseCase_Remove(t *testing.T) {
