@@ -9,7 +9,6 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
-	"time"
 )
 
 func TestNewTask(t *testing.T) {
@@ -19,6 +18,7 @@ func TestNewTask(t *testing.T) {
 	updater := domain.NewMockTaskUpdater(ctrl)
 	remover := domain.NewMockTaskRemover(ctrl)
 	encryptor := domain.NewMockSummaryEncryptor(ctrl)
+	notifier := domain.NewMockTaskNotifier(ctrl)
 
 	type args struct {
 		creator   domain.TaskCreator
@@ -26,6 +26,7 @@ func TestNewTask(t *testing.T) {
 		updater   domain.TaskUpdater
 		remover   domain.TaskRemover
 		encryptor domain.SummaryEncryptor
+		notifier  domain.TaskNotifier
 	}
 
 	tests := []struct {
@@ -42,6 +43,7 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   remover,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -54,6 +56,7 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   remover,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -66,6 +69,7 @@ func TestNewTask(t *testing.T) {
 				updater:   nil,
 				remover:   remover,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -78,6 +82,7 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   nil,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -90,6 +95,20 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   remover,
 				encryptor: nil,
+				notifier:  notifier,
+			},
+			want:    &taskUseCase{},
+			wantErr: true,
+		},
+		{
+			name: "error - nil user notifier",
+			args: args{
+				creator:   creator,
+				retriever: retriever,
+				updater:   updater,
+				remover:   remover,
+				encryptor: encryptor,
+				notifier:  nil,
 			},
 			want:    &taskUseCase{},
 			wantErr: true,
@@ -102,6 +121,7 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   remover,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			want: &taskUseCase{
 				creator:   creator,
@@ -109,13 +129,14 @@ func TestNewTask(t *testing.T) {
 				updater:   updater,
 				remover:   remover,
 				encryptor: encryptor,
+				notifier:  notifier,
 			},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.remover, tt.args.encryptor)
+			got, err := NewTask(tt.args.creator, tt.args.retriever, tt.args.updater, tt.args.remover, tt.args.encryptor, tt.args.notifier)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewTask() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -447,11 +468,9 @@ func Test_taskUseCase_Update(t *testing.T) {
 	}
 
 	var (
-		currentTime = time.Now()
-		task        = domain.Task{
+		task = domain.Task{
 			ID:      1,
 			Summary: "task summary test",
-			Date:    &currentTime,
 			UserID:  1,
 		}
 		technicalUser = domain.User{

@@ -273,6 +273,43 @@ func (mr *MockTaskRemoverMockRecorder) Remove(ctx, id interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Remove", reflect.TypeOf((*MockTaskRemover)(nil).Remove), ctx, id)
 }
 
+// MockTaskNotifier is a mock of TaskNotifier interface.
+type MockTaskNotifier struct {
+	ctrl     *gomock.Controller
+	recorder *MockTaskNotifierMockRecorder
+}
+
+// MockTaskNotifierMockRecorder is the mock recorder for MockTaskNotifier.
+type MockTaskNotifierMockRecorder struct {
+	mock *MockTaskNotifier
+}
+
+// NewMockTaskNotifier creates a new mock instance.
+func NewMockTaskNotifier(ctrl *gomock.Controller) *MockTaskNotifier {
+	mock := &MockTaskNotifier{ctrl: ctrl}
+	mock.recorder = &MockTaskNotifierMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockTaskNotifier) EXPECT() *MockTaskNotifierMockRecorder {
+	return m.recorder
+}
+
+// SendNotification mocks base method.
+func (m *MockTaskNotifier) SendNotification(ctx context.Context, body string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SendNotification", ctx, body)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SendNotification indicates an expected call of SendNotification.
+func (mr *MockTaskNotifierMockRecorder) SendNotification(ctx, body interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SendNotification", reflect.TypeOf((*MockTaskNotifier)(nil).SendNotification), ctx, body)
+}
+
 // MockSummaryEncryptor is a mock of SummaryEncryptor interface.
 type MockSummaryEncryptor struct {
 	ctrl     *gomock.Controller
