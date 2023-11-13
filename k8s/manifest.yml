@@ -1,0 +1,121 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: field-mysql
+spec:
+  selector:
+    matchLabels:
+      app: field-mysql
+  template:
+    metadata:
+      labels:
+        app: field-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: root
+            - name: MYSQL_DATABASE
+              value: field
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: field-mysql
+spec:
+  selector:
+    app: field-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306
+      name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: field-rabbitmq
+spec:
+  selector:
+    matchLabels:
+      app: field-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: field-rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3-management
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: field-rabbitmq
+spec:
+  selector:
+    app: field-rabbitmq
+  ports:
+    - port: 5672
+      targetPort: 5672
+      name: broker
+    - port: 15672
+      targetPort: 15672
+      name: manager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: field-team-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: field-team-management
+  template:
+    metadata:
+      labels:
+        app: field-team-management
+    spec:
+      containers:
+        - name: field-team-management
+          image: viniciusmartinss/field-team-management:v1.0.0
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: QUEUE
+              value: notification
+            - name: QUEUE_CONN_STRING
+              value: amqp://guest:guest@field-rabbitmq:5672/
+            - name: DATABASE
+              value: field
+            - name: DATABASE_CONN_STRING
+              value: root:root@tcp(field-mysql:3306)/field?multiStatements=true&parseTime=true
+            - name: ENCRYPTION_KEY
+              value: "123456789123456789123456"
+            - name: JWT_KEY
+              value: my_secret_key
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: field-team-management
+spec:
+  selector:
+    app: field-team-management
+  type: NodePort
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+      nodePort: 30080
+      name: http
