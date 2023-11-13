@@ -13,6 +13,7 @@ import (
 var (
 	ErrInvalidTask   = errors.New("task fields are invalid")
 	ErrTasksNotFound = errors.New("tasks not found")
+	TaskDateLayout   = "2006/01/02 15:04"
 )
 
 type TaskUsecase interface {

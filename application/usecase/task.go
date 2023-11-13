@@ -3,10 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/ViniciusMartinss/field-team-management/application/domain"
 	"log"
-	"time"
 )
+
+const notificationMessage = "The tech %d performed the task %d on date %s"
 
 type taskUseCase struct {
 	creator   domain.TaskCreator
@@ -126,8 +128,14 @@ func (u *taskUseCase) Add(ctx context.Context, task domain.Task, user domain.Use
 	if err != nil {
 		return domain.Task{}, err
 	}
-
 	task.ID = id
+
+	if task.Date != nil {
+		go func() {
+			err := u.notifier.SendNotification(ctx, fmt.Sprintf(notificationMessage, user.ID, task.ID, task.Date.Format(domain.TaskDateLayout)))
+			log.Printf("error producing notification (add): %v", err) // Later: send to metrics/observability
+		}()
+	}
 
 	summaryDecrypt, err := u.encryptor.Decrypt(task.Summary)
 	if err != nil {
@@ -153,13 +161,8 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 		return domain.Task{}, err
 	}
 
-	var emptyTime *time.Time
-	if task.Date != emptyTime {
+	if task.Date != nil {
 		tsk.Date = task.Date
-
-		go func() {
-			_ = u.notifier.SendNotification(ctx, "Message Goes Here")
-		}()
 	}
 
 	if task.Summary != "" {
@@ -174,6 +177,13 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 	err = u.updater.Update(ctx, tsk)
 	if err != nil {
 		return domain.Task{}, err
+	}
+
+	if task.Date != nil {
+		go func() {
+			err := u.notifier.SendNotification(ctx, fmt.Sprintf(notificationMessage, user.ID, task.ID, task.Date.Format(domain.TaskDateLayout)))
+			log.Printf("error producing notification (update): %v", err) // Later: send to metrics/observability
+		}()
 	}
 
 	summaryDecrypt, err := u.encryptor.Decrypt(tsk.Summary)

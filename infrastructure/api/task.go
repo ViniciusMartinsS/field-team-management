@@ -226,7 +226,7 @@ func formatResponseSingle(task domain.Task) taskResponse {
 	var date string
 
 	if task.Date != nil {
-		date = task.Date.Format("2006/01/02 15:04")
+		date = task.Date.Format(domain.TaskDateLayout)
 	}
 
 	return taskResponse{
@@ -252,9 +252,9 @@ func parseDate(date string) (*time.Time, error) {
 		return nil, nil
 	}
 
-	parsedTime, err := time.Parse("2006/01/02 15:04", date)
+	parsedTime, err := time.Parse(domain.TaskDateLayout, date)
 	if err != nil {
-		return nil, errors.New("bad Request")
+		return nil, errors.New(badRequestMessage)
 	}
 
 	return &parsedTime, nil
