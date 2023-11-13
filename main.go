@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"github.com/ViniciusMartinss/field-team-management/application/usecase"
 	"github.com/ViniciusMartinss/field-team-management/configuration"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/api"
@@ -9,8 +10,11 @@ import (
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/notifier"
 	"github.com/ViniciusMartinss/field-team-management/infrastructure/repository"
 	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
@@ -100,8 +104,31 @@ func main() {
 	}
 	authRouter.CreateRouter()
 
-	err = r.Run()
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
+	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("error to start app on: %s\n", err)
+		}
+	}()
+
+	ctx, stop := signal.NotifyContext(
+		context.Background(),
+		os.Interrupt,
+		os.Kill,
+		syscall.SIGTERM,
+	)
+
+	<-ctx.Done()
+	log.Printf("server shutting down")
+
+	err = server.Shutdown(ctx)
 	if err != nil {
-		panic(err)
-	} // listen and serve on 0.0.0.0:8080
+		log.Fatalf("error to gracefully shut down, reason: %s\n", err.Error())
+	}
+
+	stop()
 }
