@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+export QUEUE="notification"
+export QUEUE_CONN_STRING="amqp://guest:guest@localhost:5672/"
+export DATABASE="field"
+export DATABASE_CONN_STRING="{YOUR_ACCOUNT}:{YOUR_PASSWORD}@tcp(localhost:3306)/field?multiStatements=true&parseTime=true"
+export ENCRYPTION_KEY="{YOUR_ENCRYPTION_KEY}"
+export JWT_KEY="{YOUR_JWT_KEY}"
+
+make run

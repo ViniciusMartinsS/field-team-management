@@ -17,10 +17,28 @@ import (
 	"syscall"
 )
 
-func main() {
-	queue := "notification"
+const (
+	queueEnvKey         = "QUEUE"
+	queueConnKey        = "QUEUE_CONN_STRING"
+	dbEnvKey            = "DATABASE"
+	dbConnKey           = "DATABASE_CONN_STRING"
+	encryptionSecretKey = "ENCRYPTION_KEY"
+	jwtSecretKey        = "JWT_KEY"
 
-	rabbitmq := configuration.NewRabbitmq(queue, "amqp://guest:guest@localhost:5672/")
+	databaseDriver = "mysql"
+)
+
+func main() {
+	queueName := os.Getenv(queueEnvKey)
+	queueConn := os.Getenv(queueConnKey)
+
+	dbName := os.Getenv(dbEnvKey)
+	dbConn := os.Getenv(dbConnKey)
+
+	encryptionSecret := os.Getenv(encryptionSecretKey)
+	jwtSecret := os.Getenv(jwtSecretKey)
+
+	rabbitmq := configuration.NewRabbitmq(queueName, queueConn)
 	brokerConn, err := rabbitmq.Connect()
 	if err != nil {
 		panic(err)
@@ -34,9 +52,9 @@ func main() {
 	defer brokerCh.Close()
 
 	database := configuration.NewDatabase(
-		"field",
-		"mysql",
-		"root:root@tcp(localhost:3306)/field?multiStatements=true&parseTime=true",
+		dbName,
+		databaseDriver,
+		dbConn,
 	)
 
 	err = database.Connect()
@@ -61,9 +79,9 @@ func main() {
 		panic(err)
 	}
 
-	taskNotifier := notifier.NewNotifier(queue, brokerCh)
+	taskNotifier := notifier.NewNotifier(queueName, brokerCh)
 
-	encryptor, err := encryption.New("123456789123456789123456")
+	encryptor, err := encryption.New(encryptionSecret)
 	if err != nil {
 		panic(err)
 	}
@@ -80,7 +98,7 @@ func main() {
 		panic(err)
 	}
 
-	authenticator, err := jwt.New("my_secret_key")
+	authenticator, err := jwt.New(jwtSecret)
 	if err != nil {
 		panic(err)
 	}

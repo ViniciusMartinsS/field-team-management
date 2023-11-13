@@ -4,3 +4,6 @@
 # GoLang
 vendor
 coverage.*
+
+# Run Local Project
+run.local.api.sh
