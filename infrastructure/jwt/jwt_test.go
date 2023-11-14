@@ -21,7 +21,7 @@ func TestNew(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error",
+			name: "Expect error when initializing without key",
 			args: args{
 				key: "",
 			},
@@ -29,7 +29,7 @@ func TestNew(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				key: testKey,
 			},
@@ -69,7 +69,7 @@ func Test_authenticator_GenerateAccessToken(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name: "happy",
+			name: "Expect success",
 			dependencies: dependencies{
 				key: testKey,
 			},
@@ -122,7 +122,7 @@ func Test_authenticator_IsAccessTokenValid(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name: "error invalid token",
+			name: "Expect error when token is invalid",
 			dependencies: dependencies{
 				key: testKey,
 			},
@@ -132,7 +132,7 @@ func Test_authenticator_IsAccessTokenValid(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			dependencies: dependencies{
 				key: testKey,
 			},

@@ -17,21 +17,21 @@ func TestNew(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error",
+			name: "Expect error when initializing without key",
 			args: args{
 				key: "",
 			},
 			wantErr: true,
 		},
 		{
-			name: "error invalid key",
+			name: "Expect error when initializing without invalid key",
 			args: args{
 				key: "invalid",
 			},
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				key: "123456789123456789123456",
 			},
@@ -69,7 +69,7 @@ func Test_encryptor_Encrypt(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name: "happy",
+			name: "Expect success",
 			dependencies: dependencies{
 				des: des,
 			},
@@ -116,7 +116,7 @@ func Test_encryptor_Decrypt(t *testing.T) {
 		wantErr      bool
 	}{
 		{
-			name: "happy",
+			name: "Expect success",
 			dependencies: dependencies{
 				des: des,
 			},

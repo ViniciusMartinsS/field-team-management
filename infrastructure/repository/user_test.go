@@ -26,7 +26,7 @@ func TestNewUser(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error - nil db",
+			name: "Expect error when initializing without db",
 			args: args{
 				db: nil,
 			},
@@ -34,7 +34,7 @@ func TestNewUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				db: sqlxDB,
 			},

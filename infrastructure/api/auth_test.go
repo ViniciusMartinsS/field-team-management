@@ -24,7 +24,7 @@ func TestNewAuth(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "err nil router",
+			name: "Expect error when initializing without router",
 			args: args{
 				r:           nil,
 				authUsecase: authUsecase,
@@ -33,7 +33,7 @@ func TestNewAuth(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "err nil authUsecase",
+			name: "Expect error when initializing without authUsecase",
 			args: args{
 				r:           r,
 				authUsecase: nil,
@@ -42,7 +42,7 @@ func TestNewAuth(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				r:           r,
 				authUsecase: authUsecase,

@@ -79,7 +79,10 @@ func main() {
 		panic(err)
 	}
 
-	taskNotifier := notifier.NewNotifier(queueName, brokerCh)
+	taskNotifier, err := notifier.NewNotifier(queueName, brokerCh)
+	if err != nil {
+		panic(err)
+	}
 
 	encryptor, err := encryption.New(encryptionSecret)
 	if err != nil {

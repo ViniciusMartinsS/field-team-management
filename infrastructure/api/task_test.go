@@ -26,7 +26,7 @@ func TestNewTask(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "err nil router",
+			name: "Expect error when initializing without router",
 			args: args{
 				r:             nil,
 				authenticator: authenticator,
@@ -36,7 +36,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "err nil authenticator",
+			name: "Expect error when initializing without authenticator",
 			args: args{
 				r:             r,
 				authenticator: nil,
@@ -46,7 +46,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "err nil taskUsecase",
+			name: "Expect error when initializing without taskUsecase",
 			args: args{
 				r:             r,
 				authenticator: authenticator,
@@ -56,7 +56,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				r:             r,
 				authenticator: authenticator,

@@ -27,7 +27,7 @@ func TestNewAuth(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error - nil retriever",
+			name: "Expect error when initializing without retriever",
 			args: args{
 				authenticator: authenticator,
 				retriever:     nil,
@@ -36,7 +36,7 @@ func TestNewAuth(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil authenticator",
+			name: "Expect error when initializing without authenticator",
 			args: args{
 				authenticator: nil,
 				retriever:     retriever,
@@ -45,7 +45,7 @@ func TestNewAuth(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				authenticator: authenticator,
 				retriever:     retriever,
@@ -99,7 +99,7 @@ func Test_authUseCase_Authenticate(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on ListByEmail",
+			name: "Expect error thrown by ListByEmail",
 			args: args{
 				ctx:      context.Background(),
 				email:    user.Email,
@@ -112,7 +112,7 @@ func Test_authUseCase_Authenticate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on CompareHashAndPassword",
+			name: "Expect error thrown by CompareHashAndPassword",
 			args: args{
 				ctx:      context.Background(),
 				email:    user.Email,
@@ -125,7 +125,7 @@ func Test_authUseCase_Authenticate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on GenerateAccessToken",
+			name: "Expect error thrown by GenerateAccessToken",
 			args: args{
 				ctx:      context.Background(),
 				email:    user.Email,
@@ -139,7 +139,7 @@ func Test_authUseCase_Authenticate(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				ctx:      context.Background(),
 				email:    user.Email,

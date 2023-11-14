@@ -30,7 +30,7 @@ func TestNewTask(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error when empty summary",
+			name: "Expect error when empty summary",
 			args: args{
 				summary: "",
 				date:    &currentTime,
@@ -40,7 +40,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error when summary is too big",
+			name: "Expect error when summary is too big",
 			args: args{
 				summary: strings.Repeat("a", 2600),
 				date:    &currentTime,
@@ -50,7 +50,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error when no user",
+			name: "Expect error when no user",
 			args: args{
 				summary: summary,
 				date:    &currentTime,
@@ -60,7 +60,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				summary: summary,
 				date:    &currentTime,

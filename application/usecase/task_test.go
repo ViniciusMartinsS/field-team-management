@@ -38,7 +38,7 @@ func TestNewTask(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "error - nil creator",
+			name: "Expect error when initializing without creator",
 			args: args{
 				creator:   nil,
 				retriever: retriever,
@@ -51,7 +51,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil retriever",
+			name: "Expect error when initializing without retriever",
 			args: args{
 				creator:   creator,
 				retriever: nil,
@@ -64,7 +64,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil user updater",
+			name: "Expect error when initializing without user updater",
 			args: args{
 				creator:   creator,
 				retriever: retriever,
@@ -77,7 +77,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil user remover",
+			name: "Expect error when initializing without user remover",
 			args: args{
 				creator:   creator,
 				retriever: retriever,
@@ -90,7 +90,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil user encryptor",
+			name: "Expect error when initializing without user encryptor",
 			args: args{
 				creator:   creator,
 				retriever: retriever,
@@ -103,7 +103,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error - nil user notifier",
+			name: "Expect error when initializing without user notifier",
 			args: args{
 				creator:   creator,
 				retriever: retriever,
@@ -116,7 +116,7 @@ func TestNewTask(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				creator:   creator,
 				retriever: retriever,
@@ -185,7 +185,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on missing user ID",
+			name: "Expect error when user ID is missing",
 			args: args{
 				ctx: context.Background(),
 				user: domain.User{
@@ -196,7 +196,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on missing user Role ID",
+			name: "Expect error when user role ID is missing",
 			args: args{
 				ctx: context.Background(),
 				user: domain.User{
@@ -207,7 +207,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on List when fetching tasks by manager",
+			name: "Expect error thrown by List when listing tasks for manager",
 			args: args{
 				ctx:  context.Background(),
 				user: managerUser,
@@ -219,7 +219,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on ListByUserID when fetching tasks by technician",
+			name: "Expect error thrown by ListByUserID when listing tasks for technician",
 			args: args{
 				ctx:  context.Background(),
 				user: technicalUser,
@@ -231,7 +231,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy Manager",
+			name: "Expect success when listing tasks for manager",
 			args: args{
 				ctx:  context.Background(),
 				user: managerUser,
@@ -244,7 +244,7 @@ func Test_taskUseCase_ListByUser(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "happy Technical",
+			name: "Expect success when listing tasks for technician",
 			args: args{
 				ctx:  context.Background(),
 				user: technicalUser,
@@ -323,7 +323,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error invalid task User ID",
+			name: "Expect error when task user ID is missing",
 			args: args{
 				ctx: context.Background(),
 				task: domain.Task{
@@ -335,7 +335,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error invalid User ID",
+			name: "Expect error when user ID is missing",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -347,7 +347,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error invalid User Role ID",
+			name: "Expect error when task user role ID is missing",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -359,7 +359,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error forbidden",
+			name: "Expect forbidden error when user is tries to add a task for somebody else",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -369,7 +369,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Encrypt",
+			name: "Expect error thrown by Encrypt",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -382,7 +382,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Add",
+			name: "Expect error thrown by Add",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -396,7 +396,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Decrypt",
+			name: "Expect error thrown by Decrypt",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -411,7 +411,7 @@ func Test_taskUseCase_Add(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -537,7 +537,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on Update without ID",
+			name: "Expect error when task ID is missing",
 			args: args{
 				ctx: context.Background(),
 				task: domain.Task{
@@ -550,7 +550,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Update without User ID",
+			name: "Expect error when user ID is missing",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -562,7 +562,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on ListByIDAndUserID",
+			name: "Expect error thrown by ListByIDAndUserID",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -575,7 +575,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Encrypt",
+			name: "Expect error thrown by Encrypt",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -589,7 +589,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Update",
+			name: "Expect error thrown by Update",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -604,7 +604,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Update",
+			name: "Expect error thrown by Decrypt",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -620,7 +620,7 @@ func Test_taskUseCase_Update(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				ctx:  context.Background(),
 				task: task,
@@ -750,14 +750,14 @@ func Test_taskUseCase_Remove(t *testing.T) {
 		wantErr         bool
 	}{
 		{
-			name: "error on Remove without ID",
+			name: "Expect error when task ID is missing",
 			args: args{
 				ctx: context.Background(),
 			},
 			wantErr: true,
 		},
 		{
-			name: "error on Remove without UserID",
+			name: "Expect error when user ID is missing",
 			args: args{
 				ctx: context.Background(),
 				id:  id,
@@ -768,7 +768,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error on Remove without RoleID",
+			name: "Expect error when task user role ID is missing",
 			args: args{
 				ctx: context.Background(),
 				id:  id,
@@ -779,7 +779,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "error user forbidden",
+			name: "Expect forbidden error when user technician tries to remove a task",
 			args: args{
 				ctx:  context.Background(),
 				id:   id,
@@ -788,7 +788,7 @@ func Test_taskUseCase_Remove(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "happy",
+			name: "Expect success",
 			args: args{
 				ctx:  context.Background(),
 				id:   id,
