@@ -86,7 +86,7 @@ spec:
     spec:
       containers:
         - name: field-team-management
-          image: viniciusmartinss/field-team-management:v1.0.0
+          image: viniciusmartinss/field-team-management:v1.0.1
           ports:
             - containerPort: 8080
               name: http
