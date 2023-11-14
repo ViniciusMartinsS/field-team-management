@@ -420,10 +420,21 @@ $ make kubernetes
 ```
 $ make kubernetes-pod-status
 ```
-<sub> You can only request the API once all pods are **READY (1/1)** </sup>
+<sub> You can only request the API once all pods are **READY (1/1)** </sub>
 
 **Stop Application**
 ```
 $ make kubernetes-stop
 ```
 
+### Local
+
+**Copy and Change Configs**
+```
+$ cp run.local.api.sh.sample  run.local.api.sh
+```
+
+**Spin Up Application**
+```
+$ ./run.local.api.sh
+```
