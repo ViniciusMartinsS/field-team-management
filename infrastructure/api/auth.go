@@ -54,7 +54,7 @@ func (h *AuthAPIHandler) post(c *gin.Context) {
 	result, err := h.authUsecase.Authenticate(context.Background(), request.Email, request.Password)
 	if err != nil {
 		if errors.Is(err, domain.ErrUserNotFound) || errors.Is(err, domain.ErrUserInvalidPass) {
-			c.JSON(http.StatusBadRequest, toResponse(false, unauthorizedMessage))
+			c.JSON(http.StatusUnauthorized, toResponse(false, unauthorizedMessage))
 			return
 		}
 

@@ -34,6 +34,6 @@ func (n *Notifier) SendNotification(ctx context.Context, body string) error {
 		return err
 	}
 
-	log.Printf(" [x] Sent %s\n", body)
+	log.Printf("message sent: %s\n", body)
 	return nil
 }
