@@ -133,7 +133,9 @@ func (u *taskUseCase) Add(ctx context.Context, task domain.Task, user domain.Use
 	if task.Date != nil {
 		go func() {
 			err := u.notifier.SendNotification(ctx, fmt.Sprintf(notificationMessage, user.ID, task.ID, task.Date.Format(domain.TaskDateLayout)))
-			log.Printf("error producing notification (add): %v", err) // Later: send to metrics/observability
+			if err != nil {
+				log.Printf("error producing notification (add): %v", err) // Later: send to metrics/observability
+			}
 		}()
 	}
 
@@ -182,7 +184,9 @@ func (u *taskUseCase) Update(ctx context.Context, task domain.Task, user domain.
 	if task.Date != nil {
 		go func() {
 			err := u.notifier.SendNotification(ctx, fmt.Sprintf(notificationMessage, user.ID, task.ID, task.Date.Format(domain.TaskDateLayout)))
-			log.Printf("error producing notification (update): %v", err) // Later: send to metrics/observability
+			if err != nil {
+				log.Printf("error producing notification (update): %v", err) // Later: send to metrics/observability
+			}
 		}()
 	}
 
